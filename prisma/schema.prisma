@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model DelegationMandate {
+  mandate_id              String     @id @default(uuid())
+  subject_ref             String
+  scope                   String
+  max_amount              Float
+  currency                String
+  authorized_rails        String     // Stored as comma-separated string: "SEPA,STABLECOIN_EURC"
+  liability_waiver_signed Boolean    @default(false)
+  sca_timestamp           DateTime?
+  auto_execute            Boolean    @default(false)  // true = fully autonomous, false = human-in-the-loop per transaction
+  expires_at              DateTime?                   // Optional mandate expiry (from duration_days)
+  status                  String     @default("ACTIVE") // "ACTIVE", "REVOKED", "EXPIRED"
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+}
+
+model EUDIAttribute {
+  id                      String     @id @default(uuid())
+  subject_ref             String
+  type                    String     // e.g. "IdentityCredential", "AgeProof"
+  issuer                  String
+  format                  String     // e.g. "jwt_vc_json", "sd_jwt"
+  payload                 String     // Stringified JSON containing the claims
+  sd_jwt                  String?    // Simulating Selective Disclosure JWT support
+  zkp_capable             Boolean    @default(false)
+  expires_at              DateTime?
+  status                  String     @default("ACTIVE")
+  created_at              DateTime   @default(now())
+}
+
+model PresentationSession {
+  id                      String     @id @default(uuid())
+  session_nonce           String     @unique
+  mode                    String     @default("TERMINAL_SCAN") // WALLET_SCAN or TERMINAL_SCAN
+  retailer_id             String
+  use_case                String     // e.g. "AGE_GATE_PAYMENT"
+  requested_attributes    String     // Comma separated list of needed claims e.g. "age_over_18,payment_mandate"
+  shared_attributes       String?    // What was actually sent
+  zkp_used                Boolean    @default(false)
+  payment_requested       Boolean    @default(false)
+  payment_combined        Boolean    @default(false)
+  status                  String     @default("PENDING") // PENDING, VERIFICATION_PENDING, COMPLETED, REJECTED, EXPIRED
+  created_at              DateTime   @default(now())
+  expires_at              DateTime
+}
+
+model RetailerClaimPolicy {
+  id                      String     @id @default(uuid())
+  retailer_id             String
+  use_case                String     @unique
+  required_attributes     String     // Comma separated
+  optional_attributes     String?    // Comma separated
+  accept_zkp              Boolean    @default(true)
+  require_payment         Boolean    @default(false)
+  invoice_push_enabled    Boolean    @default(false)
+  loyalty_update_enabled  Boolean    @default(false)
+}
+
+model WalletDocument {
+  id                      String     @id @default(uuid())
+  subject_ref             String
+  type                    String     // e.g. "Receipt", "Invoice"
+  issuer                  String
+  document_ref            String?
+  payload                 String     // Stringified details
+  related_transaction_id  String?
+  created_at              DateTime   @default(now())
+}
+
+model LoyaltyArtifact {
+  id                      String     @id @default(uuid())
+  subject_ref             String
+  provider                String
+  tier                    String     // e.g. "Gold", "Silver"
+  points_balance          Int        @default(0)
+  member_id               String
+  updated_at              DateTime   @updatedAt
+}

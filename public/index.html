@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUDI Wallet - Review & Consent</title>
+    <style>
+        body {
+            background-color: #1a1a24;
+            color: #f0f0f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #9facf5;
+        }
+        .proposal-card {
+            background: #2a2a35;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a48;
+        }
+        .prop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a3a48;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .prop-id { font-size: 0.85rem; color: #888; }
+        .merchant-name { font-weight: bold; font-size: 1.1rem; color: #fff; }
+        .prop-body div { margin-bottom: 0.5rem; }
+        .label { color: #888; font-size: 0.9rem; }
+        .value { font-weight: bold; }
+        .price { color: #4ade80; font-size: 1.2rem; }
+        .action-row {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:active { opacity: 0.8; }
+        .btn-approve { background: #4ade80; color: #000; }
+        .btn-reject { background: #f87171; color: #000; }
+        .loader { text-align: center; color: #888; padding: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demandes d'autorisation (Saga en attente)</h1>
+        <div id="proposals-container">
+            <div class="loader">Recherche de mandats en attente...</div>
+        </div>
+    </div>
+    <script src="/app.js"></script>
+</body>
+</html>

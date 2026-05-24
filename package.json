@@ -1,0 +1,36 @@
+{
+  "name": "atos-agentic-economy-pilot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm install --prefix mobile-wallet",
+    "build": "npm install && prisma generate && tsc && npm run build --prefix mobile-wallet",
+    "start": "prisma db push && node dist/scripts/seed-eudi.js && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.5.2",
+    "@types/uuid": "^10.0.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "axios": "^1.14.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9"
+  }
+}
