@@ -50,13 +50,19 @@ function App() {
 
     // V2 Execution: Submit the presentation session to the backend
     if (presentationSession) {
+      let finalAmount = 25.00;
+      if (presentationSession.retailer_id === 'Tabac Le Havane') finalAmount = 15.50;
+      else if (presentationSession.retailer_id === 'Hôtel Royal Palace') finalAmount = 120.00;
+      else if (presentationSession.retailer_id === 'Elite Car Rental') finalAmount = 300.00;
+
       try {
         await fetch('/v2/checkout/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            session_id: presentationSession.session_id,
-            sca_attestation_id: mandateId, // Simplified: sending the ID as the cryptographic proof
+            session_id: presentationSession.id,
+            sca_attestation_id: mandateId || 'ewc_direct_sca',
+            amount: finalAmount
           })
         });
       } catch (e) { console.error('Failed to submit checkout', e); }
@@ -111,12 +117,8 @@ function App() {
                 session={presentationSession}
                 onCancel={() => setPresentationSession(null)}
                 onSuccess={(completed) => {
-                  if (presentationSession.requires_sca) {
-                    setShowSca(true); // Trigger FaceID for SCA Auth
-                  } else {
-                    setPresentationSession(null);
-                    setActiveTab('sbt'); 
-                  }
+                  // For all EWC V2 checkouts, trigger FaceID consent to authorize the transaction
+                  setShowSca(true);
                 }}
               />
             </div>
