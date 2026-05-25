@@ -1,256 +1,355 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, CheckCircle2, Ticket, ShieldCheck, CreditCard, Building2, Car, ShoppingBag } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import { QrCode, AlertCircle, ScanLine, CheckCircle2, ShieldCheck, Loader2, CreditCard, Receipt, Building2, Car, ShoppingBag, Film } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
+import { translations } from '../translations';
 
-interface Scenario {
-  id: string;
-  name: string;
-  retailerName: string;
-  icon: React.ReactNode;
-  color: string;
-  price: number;
-  attributes: string[];
-  description: string;
-  items: { name: string; price: number }[];
-}
+export const RetailerTerminal = () => {
+    const { lang } = useSettings();
+    const t = translations[lang];
 
-export function RetailerTerminal() {
-  const SCENARIOS: Scenario[] = [
-    {
-      id: 'tabac',
-      name: '🔞 Tabac - Âge & Paiement',
-      retailerName: 'Tabac Le Havane',
-      icon: <ShoppingBag size={24} color="#f43f5e" />,
-      color: '#f43f5e',
-      price: 15.50,
-      attributes: ['IdentityCredential'],
-      description: 'Achat de produits réglementés avec vérification d\'âge Zero-Knowledge Proof.',
-      items: [{ name: 'Achat Articles Tabac', price: 15.50 }]
-    },
-    {
-      id: 'hotel',
-      name: '🏨 Hôtel - Caution & Identité',
-      retailerName: 'Hôtel Royal Palace',
-      icon: <Building2 size={24} color="#a855f7" />,
-      color: '#a855f7',
-      price: 120.00,
-      attributes: ['IdentityCredential'],
-      description: 'Check-in d\'hôtel avec validation d\'identité décentralisée et dépôt de caution.',
-      items: [{ name: 'Nuitée Suite Executive', price: 120.00 }]
-    },
-    {
-      id: 'rental',
-      name: '🚗 Location - Permis de Conduire',
-      retailerName: 'Elite Car Rental',
-      icon: <Car size={24} color="#10b981" />,
-      color: '#10b981',
-      price: 300.00,
-      attributes: ['IdentityCredential'],
-      description: 'Location de véhicule premium avec validation cryptographique de votre permis de conduire ANTS.',
-      items: [{ name: 'Location Tesla Model Y (1 jour)', price: 300.00 }]
-    },
-    {
-      id: 'fastferry',
-      name: '🛳️ FastFerry - EWC Fast Checkout',
-      retailerName: 'FastFerry E-Commerce',
-      icon: <Ticket size={24} color="#0ea5e9" />,
-      color: '#0ea5e9',
-      price: 25.00,
-      attributes: ['IdentityCredential', 'StudentCard', 'ScaAttestation'],
-      description: 'Achat de billet avec attestation SCA (Strong Customer Authentication) et réduction étudiante.',
-      items: [{ name: 'Billet de Ferry : Athènes - Santorin', price: 25.00 }]
-    }
-  ];
-
-  const [selectedScenario, setSelectedScenario] = useState<Scenario>(SCENARIOS[3]); // Default to FastFerry
-  const [checkoutSession, setCheckoutSession] = useState<any>(null);
-  const [status, setStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
-  
-  const handleFastCheckout = async (scenario: Scenario) => {
-    setStatus('PENDING');
-    try {
-      const res = await fetch('/v2/checkout/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          retailer_name: scenario.retailerName,
-          amount: scenario.price,
-          requested_attributes: scenario.attributes
-        })
-      });
-      const data = await res.json();
-      setCheckoutSession(data.session);
-
-      // Auto-sync for the Wallet demo tab in Split View
-      localStorage.setItem('demo_last_nonce', data.session.session_nonce);
-      window.dispatchEvent(new Event('demo_nonce_updated'));
-      window.dispatchEvent(new CustomEvent('demo_navigate', { detail: { tab: 'scanner' } }));
-    } catch (e) {
-      console.error('Failed to create session', e);
-      setStatus('IDLE');
-    }
-  };
-
-  // Poll session status for V2 checkout
-  useEffect(() => {
-    if (status !== 'PENDING' || !checkoutSession) return;
-
-    let interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/v2/checkout/session/poll/${checkoutSession.session_nonce}`);
-        const data = await res.json();
-        if (data.status === 'COMPLETED') {
-          setStatus('SUCCESS');
-          clearInterval(interval);
+    const SCENARIOS = {
+        'AGE_GATE_PAYMENT': {
+            title: t.retailer.scenarios.lottery.title,
+            type: t.retailer.scenarios.lottery.type,
+            icon: <ScanLine size={24} color="#0EA5E9" />,
+            items: [{ name: t.retailer.scenarios.lottery.item, price: 15.50 }],
+            attributes: ['age_over_18'],
+            scope: "urn:atos:pilot:retail:age_restricted",
+            successText: t.retailer.scenarios.lottery.success
+        },
+        'HOTEL_CHECKIN': {
+            title: t.retailer.scenarios.hotel.title,
+            type: t.retailer.scenarios.hotel.type,
+            icon: <Building2 size={24} color="#0EA5E9" />,
+            items: [{ name: t.retailer.scenarios.hotel.item, price: 120.00 }],
+            attributes: ['given_name', 'family_name'],
+            scope: "urn:atos:pilot:travel:hotel",
+            successText: t.retailer.scenarios.hotel.success
+        },
+        'CAR_RENTAL': {
+            title: t.retailer.scenarios.rental.title,
+            type: t.retailer.scenarios.rental.type,
+            icon: <Car size={24} color="#0EA5E9" />,
+            items: [{ name: t.retailer.scenarios.rental.item, price: 300.00 }],
+            attributes: ['given_name', 'driving_categories_B'],
+            scope: "urn:atos:pilot:mobility:rental",
+            successText: t.retailer.scenarios.rental.success
+        },
+        'RETAIL_PERFUME': {
+            title: t.retailer.scenarios.perfume.title,
+            type: t.retailer.scenarios.perfume.type,
+            icon: <ShoppingBag size={24} color="#0EA5E9" />,
+            items: [{ name: t.retailer.scenarios.perfume.item, price: 135.00 }],
+            attributes: [],
+            scope: "urn:atos:pilot:retail:perfume",
+            successText: t.retailer.scenarios.perfume.success,
+            isEntryCheck: false
+        },
+        'CINEMA_ENTRY': {
+            title: t.retailer.scenarios.cinema.title,
+            type: t.retailer.scenarios.cinema.type,
+            icon: <Film size={24} color="#0EA5E9" />,
+            items: [],
+            attributes: ['status', 'ticket_ref_cinema'],
+            scope: "urn:atos:pilot:entertainment:tickets",
+            successText: t.retailer.scenarios.cinema.success,
+            isEntryCheck: true
         }
-      } catch (e) { }
-    }, 2000);
+    };
 
-    return () => clearInterval(interval);
-  }, [status, checkoutSession]);
+    const [status, setStatus] = useState<'IDLE' | 'GENERATING' | 'WAITING_SCAN' | 'VERIFYING' | 'SUCCESS' | 'ERROR'>('IDLE');
+    const [qrData, setQrData] = useState<any>(null);
+    const [executionData, setExecutionData] = useState<any>(null);
+    const [useCase, setUseCase] = useState<keyof typeof SCENARIOS>('AGE_GATE_PAYMENT');
 
-  return (
-    <div style={{ padding: '40px', color: 'var(--text-main)', height: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-      
-      {/* Title Header */}
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid var(--border-light)', paddingBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: selectedScenario.color, padding: '12px', borderRadius: '12px', transition: 'background-color 0.3s' }}>
-            {selectedScenario.icon}
-          </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '22px', color: selectedScenario.color, transition: 'color 0.3s' }}>
-              {selectedScenario.retailerName}
-            </h1>
-            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '13px' }}>Terminal Marchand Souverain</p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-dim)' }}>
-          <ShoppingCart size={18} />
-          <span style={{ fontWeight: 'bold', fontSize: '18px' }}>€{selectedScenario.price.toFixed(2)}</span>
-        </div>
-      </header>
+    const handleCancel = () => {
+        setStatus('IDLE');
+        setQrData(null);
+        window.dispatchEvent(new CustomEvent('demo_navigate', { detail: { tab: 'identity' } }));
+    };
 
-      {status === 'IDLE' && (
-        <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
-          {/* Scenario Selector Cards */}
-          <div>
-            <h3 style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '12px', marginTop: 0 }}>SÉLECTIONNER UN SCÉNARIO</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {SCENARIOS.map((scen) => {
-                const isSelected = selectedScenario.id === scen.id;
-                return (
-                  <div
-                    key={scen.id}
-                    onClick={() => setSelectedScenario(scen)}
-                    style={{
-                      background: isSelected ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
-                      border: isSelected ? `2px solid ${scen.color}` : '2px solid var(--border-light)',
-                      borderRadius: '12px',
-                      padding: '14px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) e.currentTarget.style.borderColor = 'var(--border-light)';
-                    }}
-                  >
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px' }}>
-                      {scen.icon}
+    const generateRequest = async () => {
+        setStatus('GENERATING');
+        setExecutionData(null);
+        const scenario = SCENARIOS[useCase];
+        const amount = scenario.items.reduce((acc, item) => acc + item.price, 0);
+
+        try {
+            const res = await fetch('/v1/retailer/presentation-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    retailer_id: 'mch_dynamic_demo',
+                    use_case: useCase,
+                    attributes: scenario.attributes,
+                    require_payment: scenario.isEntryCheck ? false : true,
+                    amount: amount,
+                    currency: 'EUR',
+                    scope: scenario.scope
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setQrData(data);
+                setStatus('WAITING_SCAN');
+                // Auto-sync for the Wallet demo tab
+                localStorage.setItem('demo_last_nonce', data.session.session_nonce);
+                window.dispatchEvent(new Event('demo_nonce_updated'));
+                window.dispatchEvent(new CustomEvent('demo_navigate', { detail: { tab: 'scanner' } }));
+            } else {
+                setStatus('ERROR');
+            }
+        } catch (e) {
+            console.error(e);
+            setStatus('ERROR');
+        }
+    };
+
+    // Polling simulation for verification
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (status === 'WAITING_SCAN' && qrData) {
+            interval = setInterval(async () => {
+                try {
+                    const scenario = SCENARIOS[useCase];
+                    const amount = scenario.items.reduce((acc, item) => acc + item.price, 0);
+
+                    const res = await fetch('/v1/retailer/verify-presentation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nonce: qrData.session.session_nonce,
+                            amount: amount,
+                            currency: 'EUR'
+                        })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success && data.session.status !== 'PENDING') {
+                        if (data.session.status === 'VERIFICATION_PENDING' || data.session.status === 'COMPLETED') {
+                            setStatus('VERIFYING');
+                            setExecutionData(data);
+                            clearInterval(interval);
+                            
+                            setTimeout(() => {
+                                setStatus('SUCCESS');
+                            }, 3500);
+                        }
+                    }
+                } catch (e) {
+                    // silent polling crash
+                }
+            }, 2000);
+        }
+        return () => clearInterval(interval);
+    }, [status, qrData]);
+
+    const activeScenario = SCENARIOS[useCase];
+    const totalAmount = activeScenario.items.reduce((acc, item) => acc + item.price, 0).toFixed(2);
+
+    return (
+        <div style={{ padding: '20px', fontFamily: 'system-ui, sans-serif', maxWidth: '600px', margin: '0 auto', background: 'var(--bg-dark)', color: 'var(--text-main)', minHeight: '100vh', transition: 'all 0.3s' }}>
+            <div style={{ background: 'var(--bg-panel)', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid var(--border-light)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '2px solid var(--border-light)', paddingBottom: '16px' }}>
+                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-main)', margin: 0 }}>
+                        {activeScenario.icon}
+                        {activeScenario.title}
+                    </h1>
+                </div>
+
+                {status === 'IDLE' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeIn 0.3s ease' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '8px' }}>
+                                {t.retailer.modeSelection}
+                            </label>
+                            <select 
+                                value={useCase} 
+                                onChange={(e) => {
+                                    setUseCase(e.target.value as keyof typeof SCENARIOS);
+                                    window.dispatchEvent(new CustomEvent('demo_navigate', { detail: { tab: 'identity' } }));
+                                }}
+                                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-light)', fontSize: '15px', background: 'var(--bg-panel)', color: 'var(--text-main)' }}
+                            >
+                                <option value="AGE_GATE_PAYMENT">{SCENARIOS['AGE_GATE_PAYMENT'].title}</option>
+                                <option value="HOTEL_CHECKIN">{SCENARIOS['HOTEL_CHECKIN'].title}</option>
+                                <option value="CAR_RENTAL">{SCENARIOS['CAR_RENTAL'].title}</option>
+                                <option value="RETAIL_PERFUME">{SCENARIOS['RETAIL_PERFUME'].title}</option>
+                                <option value="CINEMA_ENTRY">{SCENARIOS['CINEMA_ENTRY'].title}</option>
+                            </select>
+                        </div>
+
+                        {!activeScenario.isEntryCheck && (
+                            <div style={{ background: 'var(--bg-panel-hover)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', marginBottom: '8px' }}>
+                                <h3 style={{ margin: '0 0 12px 0', fontSize: '14px', color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <Receipt size={16} /> {t.retailer.cart}
+                                </h3>
+                                {activeScenario.items.map((it, idx) => (
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', color: 'var(--text-main)', marginBottom: '8px' }}>
+                                        <span>{it.name}</span>
+                                        <strong>{it.price.toFixed(2)} €</strong>
+                                    </div>
+                                ))}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', color: 'var(--text-main)', fontWeight: 700, borderTop: '2px dashed var(--border-light)', paddingTop: '8px' }}>
+                                    <span>TOTAL</span>
+                                    <span>{totalAmount} €</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <button 
+                            onClick={generateRequest}
+                            style={{ background: '#0EA5E9', color: 'white', padding: '16px', borderRadius: '12px', fontSize: '16px', fontWeight: 600, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px', boxShadow: '0 4px 12px rgba(14, 165, 233, 0.3)' }}
+                        >
+                            <QrCode size={22} />
+                            {activeScenario.isEntryCheck ? "Générer QR Contrôle d'Accès" : t.retailer.verifyAndPay}
+                        </button>
                     </div>
-                    <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontWeight: 600, fontSize: '13px' }}>{scen.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginTop: '2px' }}>€{scen.price.toFixed(2)}</div>
+                )}
+
+                {status === 'WAITING_SCAN' && qrData && (
+                    <div style={{ textAlign: 'center', padding: '20px 0', animation: 'fadeIn 0.3s ease' }}>
+                        <div style={{ background: 'white', border: '4px solid #0EA5E9', borderRadius: '16px', padding: '16px', display: 'inline-block', marginBottom: '24px', boxShadow: '0 8px 30px rgba(14, 165, 233, 0.2)' }}>
+                            <QRCodeSVG value={qrData.session.session_nonce} size={180} level="M" />
+                        </div>
+                        {!activeScenario.isEntryCheck && <h2 style={{ fontSize: '22px', color: 'var(--text-main)', margin: '0 0 8px 0', fontWeight: 800 }}>{t.retailer.toBePaid} {totalAmount} €</h2>}
+                        <p style={{ color: 'var(--text-dim)', margin: '0 0 24px 0', fontSize: '15px' }}>
+                            {t.retailer.instructionsText}
+                        </p>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: '#0EA5E9', fontSize: '15px', fontWeight: 600, background: 'rgba(14, 165, 233, 0.1)', padding: '12px 20px', borderRadius: '24px', width: 'fit-content', margin: '0 auto' }}>
+                            <Loader2 size={18} className="animate-spin" />
+                            {t.retailer.waitingScan}...
+                        </div>
+
+                        {/* Bouton Retour / Annuler */}
+                        <div style={{ marginTop: '20px' }}>
+                            <button 
+                                onClick={handleCancel}
+                                style={{ 
+                                    background: 'transparent', 
+                                    color: '#94A3B8', 
+                                    border: '1px solid var(--border-light)', 
+                                    padding: '10px 20px', 
+                                    borderRadius: '12px', 
+                                    fontSize: '14px', 
+                                    fontWeight: 600, 
+                                    cursor: 'pointer', 
+                                    display: 'inline-flex', 
+                                    alignItems: 'center', 
+                                    gap: '8px', 
+                                    transition: 'all 0.2s' 
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.color = '#F1F5F9'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-light)'; e.currentTarget.style.color = '#94A3B8'; }}
+                            >
+                                {t.common.cancel}
+                            </button>
+                        </div>
+
+                        {/* DEBUG HELPER FOR DEMO */}
+                        <div style={{ marginTop: '40px', padding: '15px', background: 'var(--bg-panel-hover)', border: '1px solid var(--border-light)', color: 'var(--text-dim)', borderRadius: '8px', fontSize: '12px', textAlign: 'left' }}>
+                            <strong style={{ color: 'var(--text-main)' }}>Nonce de Session :</strong><br/>
+                            <code style={{ fontSize: '14px', color: '#0EA5E9', fontWeight: 600, userSelect: 'all' }}>{qrData.session.session_nonce}</code>
+                        </div>
                     </div>
-                  </div>
-                );
-              })}
+                )}
+
+                {status === 'ERROR' && (
+                    <div style={{ textAlign: 'center', padding: '40px 0', animation: 'fadeIn 0.3s ease' }}>
+                        <div style={{ color: '#EF4444', marginBottom: '16px' }}>
+                            <AlertCircle size={48} style={{ margin: '0 auto' }} />
+                        </div>
+                        <h2 style={{ fontSize: '20px', color: '#EF4444', margin: '0 0 12px 0' }}>Une erreur est survenue</h2>
+                        <p style={{ color: 'var(--text-dim)', marginBottom: '24px' }}>Impossible de générer ou de vérifier la session EUDI.</p>
+                        <button 
+                            onClick={handleCancel}
+                            style={{ background: '#334155', color: 'white', padding: '12px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                        >
+                            {t.common.cancel}
+                        </button>
+                    </div>
+                )}
+
+                {status === 'VERIFYING' && (
+                     <div style={{ textAlign: 'center', padding: '40px 0', animation: 'fadeIn 0.3s ease' }}>
+                         <Loader2 size={64} className="animate-spin" color="#10B981" style={{ margin: '0 auto 24px' }} />
+                         <h2 style={{ fontSize: '20px', color: '#10B981', margin: '0 0 8px 0' }}>Traitement EUDI V2...</h2>
+                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px', textAlign: 'left', background: 'var(--bg-panel-hover)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-light)', width: '80%', margin: '24px auto 0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: 600, fontSize: '14px' }}>
+                                <CheckCircle2 size={16} /> Preuves Cryptographiques Reçues
+                            </div>
+                            {!activeScenario.isEntryCheck && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0EA5E9', fontWeight: 600, fontSize: '14px' }}>
+                                    <Loader2 size={16} className="animate-spin" /> Exécution EUDI Pay ({totalAmount} €)
+                                </div>
+                            )}
+                         </div>
+                     </div>
+                )}
+
+                {status === 'SUCCESS' && (
+                    <div style={{ textAlign: 'center', padding: '10px 0', animation: 'fadeIn 0.4s ease' }}>
+                        <div style={{ background: '#10B981', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 10px 25px rgba(16, 185, 129, 0.4)' }}>
+                            <CheckCircle2 size={48} color="white" />
+                        </div>
+                        <h2 style={{ fontSize: '26px', color: 'var(--text-main)', margin: '0 0 8px 0', fontWeight: 800 }}>{activeScenario.isEntryCheck ? "Vérification OK" : "Paiement Approuvé"}</h2>
+                        {!activeScenario.isEntryCheck && <h3 style={{ fontSize: '20px', color: '#10B981', margin: '0 0 24px 0', fontWeight: 700 }}>{totalAmount} €</h3>}
+
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '24px' }}>
+                            <span style={{ padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', borderRadius: '20px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <ShieldCheck size={14} /> {activeScenario.successText}
+                            </span>
+                            {!activeScenario.isEntryCheck && (
+                                <span style={{ padding: '6px 12px', background: 'rgba(14, 165, 233, 0.1)', color: '#0EA5E9', borderRadius: '20px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <CreditCard size={14} /> EUDI Pay
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Simulated Receipt Print */}
+                        <div style={{ background: 'white', position: 'relative', width: '320px', margin: '0 auto', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', borderTop: '2px dashed #CBD5E1', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', padding: '24px 16px', textAlign: 'left', fontFamily: 'monospace', color: 'black' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <strong>{activeScenario.title.toUpperCase()}</strong><br/>
+                            </div>
+                            <div style={{ borderBottom: '1px dashed #CBD5E1', paddingBottom: '8px', marginBottom: '8px', fontSize: '14px' }}>
+                                {activeScenario.items.map((it, idx) => (
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>{it.name.toUpperCase().substring(0,20)}</span>
+                                        <span>{it.price.toFixed(2)} EUR</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 'bold' }}>
+                                <span>TOTAL</span>
+                                <span>{totalAmount} EUR</span>
+                            </div>
+                            <div style={{ marginTop: '16px', fontSize: '12px', color: '#64748B', textAlign: 'center' }}>
+                                PAIEMENT DIGITAL<br/>
+                                <code>TX-{executionData?.executionData?.transaction?.transaction_id?.substring(0,8) || 'AGENTIC-39A2'}</code><br/><br/>
+                                Scope: {activeScenario.scope.split(':').pop()}<br/>
+                                Validation EUDI ☑<br/><br/>
+                                MERCI DE VOTRE VISITE
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => { setStatus('IDLE'); }}
+                            style={{ background: 'var(--accent-neon)', color: 'white', padding: '14px 28px', borderRadius: '12px', fontSize: '16px', fontWeight: 600, border: 'none', cursor: 'pointer', marginTop: '32px', display: 'inline-flex', gap: '8px', alignItems: 'center', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)' }}
+                        >
+                            {t.retailer.newTransaction}
+                        </button>
+                    </div>
+                )}
             </div>
-          </div>
-
-          {/* Description of Scenario */}
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', fontSize: '13px', lineHeight: 1.5 }}>
-            <span style={{ color: selectedScenario.color, fontWeight: 'bold' }}>Description : </span>
-            <span style={{ color: 'var(--text-dim)' }}>{selectedScenario.description}</span>
-            <div style={{ marginTop: '8px', fontSize: '11px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ color: 'white', fontWeight: 600 }}>Attributs requis :</span>
-              {selectedScenario.attributes.map(attr => (
-                <span key={attr} style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', color: '#94a3b8' }}>
-                  {attr}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          {/* Panier Detail */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '18px' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--text-dim)' }}>DÉTAIL DU PANIER</h3>
-            {selectedScenario.items.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', fontSize: '14px' }}>
-                <span style={{ color: '#e2e8f0', fontWeight: 500 }}>{item.name}</span>
-                <span style={{ fontWeight: 'bold' }}>€{item.price.toFixed(2)}</span>
-              </div>
-            ))}
-            <div style={{ borderTop: '1px dashed var(--border-light)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-              <span style={{ color: 'var(--text-dim)', fontSize: '14px' }}>Total Commande</span>
-              <span style={{ fontSize: '18px', fontWeight: 'bold', color: selectedScenario.color, transition: 'color 0.3s' }}>
-                €{selectedScenario.price.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <button 
-              className="primary-button" 
-              style={{ padding: '14px', fontSize: '15px', background: selectedScenario.color, color: '#000', fontWeight: 700, display: 'flex', justifyContent: 'center', gap: '10px', transition: 'background-color 0.3s' }}
-              onClick={() => handleFastCheckout(selectedScenario)}
-            >
-              <ShieldCheck size={20} /> Fast Checkout avec EUDI Wallet
-            </button>
-            <button className="secondary-button" style={{ padding: '14px', fontSize: '15px', display: 'flex', justifyContent: 'center', gap: '10px' }}>
-              <CreditCard size={20} /> Payer par carte classique
-            </button>
-          </div>
+            
+            <style>{`
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            `}</style>
         </div>
-      )}
-
-      {status === 'PENDING' && checkoutSession && (
-        <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '24px', marginBottom: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}>
-            <QRCodeSVG value={JSON.stringify({ nonce: checkoutSession.session_nonce, type: 'EUDI_FAST_CHECKOUT' })} size={200} />
-          </div>
-          <h2 style={{ fontSize: '20px', marginBottom: '12px' }}>Scan pour finaliser l'achat</h2>
-          <p style={{ color: 'var(--text-dim)', maxWidth: '420px', lineHeight: 1.5, fontSize: '14px', margin: 0 }}>
-            Veuillez scanner ce QR code avec votre **EUDI Wallet** (ou observer le remplissage automatique du scanner en mode Split-View) pour présenter vos attestations et confirmer biométriquement le paiement.
-          </p>
-          <div className="pulse-dot" style={{ marginTop: '32px', background: selectedScenario.color }} />
-        </div>
-      )}
-
-      {status === 'SUCCESS' && (
-        <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <CheckCircle2 color="var(--success-green)" size={80} style={{ marginBottom: '20px' }} />
-          <h1 style={{ color: 'var(--success-green)', marginBottom: '12px', fontSize: '28px' }}>Achat Réussi !</h1>
-          <p style={{ color: 'var(--text-dim)', fontSize: '15px', maxWidth: '440px', lineHeight: 1.6, margin: 0 }}>
-            L'attestation d'autorisation **PSD2 SCA** a été validée avec succès. Un reçu Verifiable Credential sous forme de **SBT (Soulbound Token)** a été émis directement dans votre coffre-fort d'identité !
-          </p>
-          <button 
-            className="secondary-button" 
-            style={{ marginTop: '40px', padding: '12px 30px' }}
-            onClick={() => setStatus('IDLE')}
-          >
-            Retour au Terminal
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
+    );
+};
