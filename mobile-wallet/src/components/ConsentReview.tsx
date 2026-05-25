@@ -79,7 +79,7 @@ export function ConsentReview({ session, onCancel, onSuccess }: ConsentReviewPro
 
       <div style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
         <button className="secondary-button" style={{ flex: 1 }} onClick={onCancel}>
-          {t.consent.deny}
+          {t.consent.btnCancel}
         </button>
         <button 
           className="primary-button" 

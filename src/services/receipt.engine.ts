@@ -58,7 +58,7 @@ export class ReceiptEngine {
                 "type": "Ed25519Signature2020",
                 "proofPurpose": "assertionMethod",
                 "verificationMethod": "did:web:antigravity.merchant#key-1",
-                "signatureValue": `zMockSig_${crypto.randomUUID().split('-')[0]}`
+                "signatureValue": `zMockSig_${Math.random().toString(36).substring(2, 10)}`
             }
         };
 

@@ -37,14 +37,23 @@ checkoutV2Router.post('/submit', async (req, res) => {
     const session = await prisma.presentationSession.findUnique({ where: { id: session_id } });
     if (!session) return res.status(404).json({ error: 'Session not found' });
     
-    // In a real system, we'd verify the cryptographic signature of the SCA Attestation here.
-    // For the pilot, we verify the user has the credential.
-    const hasSca = await prisma.eUDIAttribute.findFirst({
-      where: { type: 'ScaAttestation', status: 'ACTIVE' }
-    });
-    
-    if (!hasSca) {
-      return res.status(400).json({ error: 'SCA Attestation missing or invalid' });
+    // We only require SCA Attestation if the session requested it (e.g. FastFerry)
+    const requiresSca = session.requested_attributes.includes('ScaAttestation');
+    if (requiresSca) {
+      const hasSca = await prisma.eUDIAttribute.findFirst({
+        where: { type: 'ScaAttestation', status: 'ACTIVE' }
+      });
+      if (!hasSca) {
+        return res.status(400).json({ error: 'SCA Attestation missing or invalid. Please complete Banque enrollment first.' });
+      }
+    } else {
+      // For other scenarios, we verify the user has an IdentityCredential (which is seeded by default)
+      const hasIdentity = await prisma.eUDIAttribute.findFirst({
+        where: { type: 'IdentityCredential', status: 'ACTIVE' }
+      });
+      if (!hasIdentity) {
+        return res.status(400).json({ error: 'Identity Credential missing or invalid.' });
+      }
     }
     
     const finalAmount = amount || 25.0;
