@@ -13,6 +13,7 @@ import { UcpController } from '../controllers/ucp.controller';
 import { RetailerController } from '../controllers/retailer.controller';
 import { checkoutV2Router } from '../controllers/v2.checkout.routes';
 import { issuanceV2Router } from '../controllers/v2.issuance.routes';
+import { receiptEngine } from '../services/receipt.engine';
 
 const gatewayApp = express();
 gatewayApp.set('trust proxy', true);
@@ -69,7 +70,7 @@ v1Router.post('/wallet/mandates/simulate-sca', walletController.simulateSca.bind
 v1Router.get('/wallet/mandates', walletController.listMandates.bind(walletController));
 v1Router.post('/wallet/mandates/generate', walletController.generateMandate.bind(walletController));
 v1Router.post('/wallet/mandates/:id/revoke', walletController.revokeMandate.bind(walletController));
-v1Router.get('/wallet/receipts', (_req, res) => res.json({ success: true, receipts: [] }));
+v1Router.get('/wallet/receipts', (_req, res) => res.json({ success: true, receipts: receiptEngine.getReceipts() }));
 v1Router.get('/wallet/attributes', walletController.listAttributes.bind(walletController));
 v1Router.get('/wallet/documents', walletController.listDocuments.bind(walletController));
 v1Router.post('/wallet/scan-request', walletController.scanPresentationRequest.bind(walletController));

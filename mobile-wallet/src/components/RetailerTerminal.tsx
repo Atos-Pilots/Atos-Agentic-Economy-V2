@@ -1,38 +1,103 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, CheckCircle2, QrCode, Ticket, ShieldCheck, CreditCard } from 'lucide-react';
+import { ShoppingCart, CheckCircle2, Ticket, ShieldCheck, CreditCard, Building2, Car, ShoppingBag } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
+interface Scenario {
+  id: string;
+  name: string;
+  retailerName: string;
+  icon: React.ReactNode;
+  color: string;
+  price: number;
+  attributes: string[];
+  description: string;
+  items: { name: string; price: number }[];
+}
+
 export function RetailerTerminal() {
-  const [cart] = useState([{ name: 'Ferry Ticket: Athens - Santorini', price: 25.00 }]);
+  const SCENARIOS: Scenario[] = [
+    {
+      id: 'tabac',
+      name: '🔞 Tabac - Âge & Paiement',
+      retailerName: 'Tabac Le Havane',
+      icon: <ShoppingBag size={24} color="#f43f5e" />,
+      color: '#f43f5e',
+      price: 15.50,
+      attributes: ['IdentityCredential'],
+      description: 'Achat de produits réglementés avec vérification d\'âge Zero-Knowledge Proof.',
+      items: [{ name: 'Achat Articles Tabac', price: 15.50 }]
+    },
+    {
+      id: 'hotel',
+      name: '🏨 Hôtel - Caution & Identité',
+      retailerName: 'Hôtel Royal Palace',
+      icon: <Building2 size={24} color="#a855f7" />,
+      color: '#a855f7',
+      price: 120.00,
+      attributes: ['IdentityCredential'],
+      description: 'Check-in d\'hôtel avec validation d\'identité décentralisée et dépôt de caution.',
+      items: [{ name: 'Nuitée Suite Executive', price: 120.00 }]
+    },
+    {
+      id: 'rental',
+      name: '🚗 Location - Permis de Conduire',
+      retailerName: 'Elite Car Rental',
+      icon: <Car size={24} color="#10b981" />,
+      color: '#10b981',
+      price: 300.00,
+      attributes: ['IdentityCredential'],
+      description: 'Location de véhicule premium avec validation cryptographique de votre permis de conduire ANTS.',
+      items: [{ name: 'Location Tesla Model Y (1 jour)', price: 300.00 }]
+    },
+    {
+      id: 'fastferry',
+      name: '🛳️ FastFerry - EWC Fast Checkout',
+      retailerName: 'FastFerry E-Commerce',
+      icon: <Ticket size={24} color="#0ea5e9" />,
+      color: '#0ea5e9',
+      price: 25.00,
+      attributes: ['IdentityCredential', 'StudentCard', 'ScaAttestation'],
+      description: 'Achat de billet avec attestation SCA (Strong Customer Authentication) et réduction étudiante.',
+      items: [{ name: 'Billet de Ferry : Athènes - Santorin', price: 25.00 }]
+    }
+  ];
+
+  const [selectedScenario, setSelectedScenario] = useState<Scenario>(SCENARIOS[3]); // Default to FastFerry
   const [checkoutSession, setCheckoutSession] = useState<any>(null);
   const [status, setStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
   
-  const handleFastCheckout = async () => {
+  const handleFastCheckout = async (scenario: Scenario) => {
     setStatus('PENDING');
     try {
       const res = await fetch('/v2/checkout/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          retailer_name: 'FastFerry E-Commerce',
-          amount: 25.00,
-          requested_attributes: ['IdentityCredential', 'StudentCard', 'ScaAttestation']
+          retailer_name: scenario.retailerName,
+          amount: scenario.price,
+          requested_attributes: scenario.attributes
         })
       });
       const data = await res.json();
       setCheckoutSession(data.session);
+
+      // Auto-sync for the Wallet demo tab in Split View
+      localStorage.setItem('demo_last_nonce', data.session.session_nonce);
+      window.dispatchEvent(new Event('demo_nonce_updated'));
+      window.dispatchEvent(new CustomEvent('demo_navigate', { detail: { tab: 'scanner' } }));
     } catch (e) {
       console.error('Failed to create session', e);
       setStatus('IDLE');
     }
   };
 
+  // Poll session status for V2 checkout
   useEffect(() => {
     if (status !== 'PENDING' || !checkoutSession) return;
 
     let interval = setInterval(async () => {
       try {
-        const res = await fetch(`/v1/consent/poll/${checkoutSession.session_nonce}`);
+        const res = await fetch(`/v2/checkout/session/poll/${checkoutSession.session_nonce}`);
         const data = await res.json();
         if (data.status === 'COMPLETED') {
           setStatus('SUCCESS');
@@ -45,55 +110,113 @@ export function RetailerTerminal() {
   }, [status, checkoutSession]);
 
   return (
-    <div style={{ padding: '40px', color: 'var(--text-main)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px', borderBottom: '1px solid var(--border-light)', paddingBottom: '20px' }}>
+    <div style={{ padding: '40px', color: 'var(--text-main)', height: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+      
+      {/* Title Header */}
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid var(--border-light)', paddingBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: '#0ea5e9', padding: '12px', borderRadius: '12px' }}>
-            <Ticket color="white" size={28} />
+          <div style={{ background: selectedScenario.color, padding: '12px', borderRadius: '12px', transition: 'background-color 0.3s' }}>
+            {selectedScenario.icon}
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: '24px', color: '#0ea5e9' }}>FastFerry</h1>
-            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '14px' }}>E-commerce Checkout</p>
+            <h1 style={{ margin: 0, fontSize: '22px', color: selectedScenario.color, transition: 'color 0.3s' }}>
+              {selectedScenario.retailerName}
+            </h1>
+            <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: '13px' }}>Terminal Marchand Souverain</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-dim)' }}>
-          <ShoppingCart size={20} />
-          <span style={{ fontWeight: 'bold' }}>€25.00</span>
+          <ShoppingCart size={18} />
+          <span style={{ fontWeight: 'bold', fontSize: '18px' }}>€{selectedScenario.price.toFixed(2)}</span>
         </div>
       </header>
 
       {status === 'IDLE' && (
-        <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: '18px', marginBottom: '20px' }}>Votre Panier</h2>
+        <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '20px', marginBottom: '40px' }}>
-            {cart.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', background: '#1e293b', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Ticket size={20} color="#94a3b8" />
+          {/* Scenario Selector Cards */}
+          <div>
+            <h3 style={{ fontSize: '14px', color: 'var(--text-dim)', marginBottom: '12px', marginTop: 0 }}>SÉLECTIONNER UN SCÉNARIO</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {SCENARIOS.map((scen) => {
+                const isSelected = selectedScenario.id === scen.id;
+                return (
+                  <div
+                    key={scen.id}
+                    onClick={() => setSelectedScenario(scen)}
+                    style={{
+                      background: isSelected ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+                      border: isSelected ? `2px solid ${scen.color}` : '2px solid var(--border-light)',
+                      borderRadius: '12px',
+                      padding: '14px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) e.currentTarget.style.borderColor = 'var(--border-light)';
+                    }}
+                  >
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px' }}>
+                      {scen.icon}
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <div style={{ fontWeight: 600, fontSize: '13px' }}>{scen.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-dim)', marginTop: '2px' }}>€{scen.price.toFixed(2)}</div>
+                    </div>
                   </div>
-                  <span style={{ fontWeight: 500 }}>{item.name}</span>
-                </div>
-                <span style={{ fontWeight: 'bold' }}>€{item.price.toFixed(2)}</span>
-              </div>
-            ))}
-            <div style={{ borderTop: '1px dashed var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-dim)' }}>Total</span>
-              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#0ea5e9' }}>€25.00</span>
+                );
+              })}
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Description of Scenario */}
+          <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', fontSize: '13px', lineHeight: 1.5 }}>
+            <span style={{ color: selectedScenario.color, fontWeight: 'bold' }}>Description : </span>
+            <span style={{ color: 'var(--text-dim)' }}>{selectedScenario.description}</span>
+            <div style={{ marginTop: '8px', fontSize: '11px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ color: 'white', fontWeight: 600 }}>Attributs requis :</span>
+              {selectedScenario.attributes.map(attr => (
+                <span key={attr} style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 6px', borderRadius: '4px', color: '#94a3b8' }}>
+                  {attr}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Panier Detail */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '18px' }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--text-dim)' }}>DÉTAIL DU PANIER</h3>
+            {selectedScenario.items.map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', fontSize: '14px' }}>
+                <span style={{ color: '#e2e8f0', fontWeight: 500 }}>{item.name}</span>
+                <span style={{ fontWeight: 'bold' }}>€{item.price.toFixed(2)}</span>
+              </div>
+            ))}
+            <div style={{ borderTop: '1px dashed var(--border-light)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+              <span style={{ color: 'var(--text-dim)', fontSize: '14px' }}>Total Commande</span>
+              <span style={{ fontSize: '18px', fontWeight: 'bold', color: selectedScenario.color, transition: 'color 0.3s' }}>
+                €{selectedScenario.price.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <button 
               className="primary-button" 
-              style={{ padding: '16px', fontSize: '16px', background: '#3b82f6', display: 'flex', justifyContent: 'center', gap: '12px' }}
-              onClick={handleFastCheckout}
+              style={{ padding: '14px', fontSize: '15px', background: selectedScenario.color, color: '#000', fontWeight: 700, display: 'flex', justifyContent: 'center', gap: '10px', transition: 'background-color 0.3s' }}
+              onClick={() => handleFastCheckout(selectedScenario)}
             >
-              <ShieldCheck size={24} /> Fast Checkout avec EUDI Wallet
+              <ShieldCheck size={20} /> Fast Checkout avec EUDI Wallet
             </button>
-            <button className="secondary-button" style={{ padding: '16px', fontSize: '16px', display: 'flex', justifyContent: 'center', gap: '12px' }}>
-              <CreditCard size={24} /> Payer par carte classique
+            <button className="secondary-button" style={{ padding: '14px', fontSize: '15px', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+              <CreditCard size={20} /> Payer par carte classique
             </button>
           </div>
         </div>
@@ -101,30 +224,30 @@ export function RetailerTerminal() {
 
       {status === 'PENDING' && checkoutSession && (
         <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '24px', marginBottom: '24px' }}>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '24px', marginBottom: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}>
             <QRCodeSVG value={JSON.stringify({ nonce: checkoutSession.session_nonce, type: 'EUDI_FAST_CHECKOUT' })} size={200} />
           </div>
-          <h2 style={{ fontSize: '20px', marginBottom: '12px' }}>Scan to Checkout</h2>
-          <p style={{ color: 'var(--text-dim)', maxWidth: '400px', lineHeight: 1.5 }}>
-            Veuillez scanner ce QR code avec votre EUDI Wallet pour partager votre carte étudiante (si applicable) et autoriser le paiement.
+          <h2 style={{ fontSize: '20px', marginBottom: '12px' }}>Scan pour finaliser l'achat</h2>
+          <p style={{ color: 'var(--text-dim)', maxWidth: '420px', lineHeight: 1.5, fontSize: '14px', margin: 0 }}>
+            Veuillez scanner ce QR code avec votre **EUDI Wallet** (ou observer le remplissage automatique du scanner en mode Split-View) pour présenter vos attestations et confirmer biométriquement le paiement.
           </p>
-          <div className="pulse-dot" style={{ marginTop: '32px' }} />
+          <div className="pulse-dot" style={{ marginTop: '32px', background: selectedScenario.color }} />
         </div>
       )}
 
       {status === 'SUCCESS' && (
         <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <CheckCircle2 color="var(--success-green)" size={80} style={{ marginBottom: '24px' }} />
-          <h1 style={{ color: 'var(--success-green)', marginBottom: '12px' }}>Paiement Validé !</h1>
-          <p style={{ color: 'var(--text-dim)', fontSize: '16px', maxWidth: '400px' }}>
-            L'autorisation SCA a été vérifiée avec succès. Vos billets ont été ajoutés à votre portefeuille numérique.
+          <CheckCircle2 color="var(--success-green)" size={80} style={{ marginBottom: '20px' }} />
+          <h1 style={{ color: 'var(--success-green)', marginBottom: '12px', fontSize: '28px' }}>Achat Réussi !</h1>
+          <p style={{ color: 'var(--text-dim)', fontSize: '15px', maxWidth: '440px', lineHeight: 1.6, margin: 0 }}>
+            L'attestation d'autorisation **PSD2 SCA** a été validée avec succès. Un reçu Verifiable Credential sous forme de **SBT (Soulbound Token)** a été émis directement dans votre coffre-fort d'identité !
           </p>
           <button 
             className="secondary-button" 
-            style={{ marginTop: '40px' }}
+            style={{ marginTop: '40px', padding: '12px 30px' }}
             onClick={() => setStatus('IDLE')}
           >
-            Retour à l'accueil
+            Retour au Terminal
           </button>
         </div>
       )}
