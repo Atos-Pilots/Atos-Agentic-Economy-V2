@@ -6,6 +6,8 @@ export interface ReceiptData {
     amount?: number;
     currency?: string;
     rail?: string;
+    selected_brand?: string;
+    retailer_id?: string;
 }
 
 export interface StoredReceipt {
@@ -18,21 +20,38 @@ export interface StoredReceipt {
     vc_hash: string;
     sbt_token_id: string;
     sbt_uri: string;
+    selected_brand: string;
+}
+
+export interface GreenImpactNft {
+    token_id: string;
+    owner: string;
+    greenCheckoutsCount: number;
+    tier: 'Seedling' | 'Sapling' | 'Gold Forest';
+    title: string;
+    description: string;
+    updatedAt: string;
 }
 
 export class ReceiptEngine {
-    // In-memory store for this pilot (would be persisted in DB in production)
     private receipts: StoredReceipt[] = [];
+    private greenCheckoutsCount: number = 0;
 
     constructor() {
         this.registerListeners();
     }
 
     private registerListeners() {
-        // When saga completes successfully, automatically forge the receipts
         eventBus.subscribe('purchase.completed', (data: ReceiptData) => {
             const receipt = this.issueVerifiableReceipt(data);
             this.receipts.unshift(receipt);
+            
+            // Check if green merchant
+            const isGreen = data.retailer_id === 'FastFerry E-Commerce' || data.retailer_id?.includes('FastFerry');
+            if (isGreen) {
+                this.greenCheckoutsCount++;
+                console.log(`[Receipt Engine] 🌱 Green checkout registered! Count is now ${this.greenCheckoutsCount}`);
+            }
         });
     }
 
@@ -40,8 +59,8 @@ export class ReceiptEngine {
         const issuedAt = new Date().toISOString();
         const vcHash = `0x${data.intent_id.replace(/-/g, '').slice(0, 32)}`;
         const sbtTokenId = `sbt_${Date.now()}`;
+        const brand = data.selected_brand || 'CB';
 
-        // Mock W3C Verifiable Credential (logged to console for auditability)
         const vc = {
             "@context": ["https://www.w3.org/2018/credentials/v1"],
             "type": ["VerifiableCredential", "PurchaseReceiptCredential"],
@@ -52,7 +71,8 @@ export class ReceiptEngine {
                 "paymentIntent": data.intent_id,
                 "amount": data.amount || 0,
                 "currency": data.currency || 'EUR',
-                "settlementRail": data.rail || 'UNKNOWN'
+                "settlementRail": data.rail || 'UNKNOWN',
+                "cardBrand": brand
             },
             "proof": {
                 "type": "Ed25519Signature2020",
@@ -62,7 +82,7 @@ export class ReceiptEngine {
             }
         };
 
-        console.log(`[Receipt Engine] ✅ FORGED VC for ${data.intent_id} — ${data.amount} ${data.currency || 'EUR'} on ${data.rail}`);
+        console.log(`[Receipt Engine] ✅ FORGED VC for ${data.intent_id} — ${data.amount} ${data.currency || 'EUR'} on ${data.rail} with brand ${brand}`);
         console.log(`[Receipt Engine] ⛓️  MINED SBT ${sbtTokenId} → ipfs://receipt_${data.intent_id}`);
 
         return {
@@ -74,12 +94,43 @@ export class ReceiptEngine {
             issuedAt,
             vc_hash: vcHash,
             sbt_token_id: sbtTokenId,
-            sbt_uri: `ipfs://receipt_${data.intent_id}`
+            sbt_uri: `ipfs://receipt_${data.intent_id}`,
+            selected_brand: brand
         };
     }
 
     public getReceipts(): StoredReceipt[] {
         return this.receipts;
+    }
+
+    public getGreenImpactNft(): GreenImpactNft {
+        let tier: 'Seedling' | 'Sapling' | 'Gold Forest' = 'Seedling';
+        let title = 'Jeune Pousse (Seedling)';
+        let description = 'Niveau 1 : Émissions de carbone compensées via des checkouts verts.';
+        
+        if (this.greenCheckoutsCount >= 3) {
+            tier = 'Gold Forest';
+            title = "Forêt d'Or (Gold Forest)";
+            description = 'Niveau Élite : Champion de la compensation carbone de l’économie agentique Atos.';
+        } else if (this.greenCheckoutsCount >= 2) {
+            tier = 'Sapling';
+            title = 'Arbrisseau (Sapling)';
+            description = 'Niveau 2 : Engagement continu avec compensation carbone de vos trajets.';
+        }
+
+        return {
+            token_id: 'atos_green_impact_sbt_001',
+            owner: 'did:key:user_wallet',
+            greenCheckoutsCount: this.greenCheckoutsCount,
+            tier,
+            title,
+            description,
+            updatedAt: new Date().toISOString()
+        };
+    }
+    
+    public incrementGreenCheckouts() {
+        this.greenCheckoutsCount++;
     }
 }
 

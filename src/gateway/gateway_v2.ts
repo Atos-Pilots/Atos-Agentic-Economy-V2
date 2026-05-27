@@ -71,6 +71,7 @@ v1Router.get('/wallet/mandates', walletController.listMandates.bind(walletContro
 v1Router.post('/wallet/mandates/generate', walletController.generateMandate.bind(walletController));
 v1Router.post('/wallet/mandates/:id/revoke', walletController.revokeMandate.bind(walletController));
 v1Router.get('/wallet/receipts', (_req, res) => res.json({ success: true, receipts: receiptEngine.getReceipts() }));
+v1Router.get('/wallet/fidelity-nft', (_req, res) => res.json({ success: true, nft: receiptEngine.getGreenImpactNft() }));
 v1Router.get('/wallet/attributes', walletController.listAttributes.bind(walletController));
 v1Router.get('/wallet/documents', walletController.listDocuments.bind(walletController));
 v1Router.post('/wallet/scan-request', walletController.scanPresentationRequest.bind(walletController));

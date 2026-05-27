@@ -27,6 +27,9 @@ function App() {
   // V2 Presentation Session State
   const [presentationSession, setPresentationSession] = useState<any>(null);
 
+  // Selected Card Brand for Co-badging
+  const [selectedBrand, setSelectedBrand] = useState<'CB' | 'VISA'>('CB');
+
   useEffect(() => {
     const handleHashChange = () => setRoute(window.location.hash || '#wallet');
     window.addEventListener('hashchange', handleHashChange);
@@ -62,7 +65,8 @@ function App() {
           body: JSON.stringify({
             session_id: presentationSession.id,
             sca_attestation_id: mandateId || 'ewc_direct_sca',
-            amount: finalAmount
+            amount: finalAmount,
+            selected_brand: selectedBrand // Transmit selected brand (co-badging)
           })
         });
       } catch (e) { console.error('Failed to submit checkout', e); }
@@ -116,7 +120,8 @@ function App() {
               <ConsentReview
                 session={presentationSession}
                 onCancel={() => setPresentationSession(null)}
-                onSuccess={(completed) => {
+                onSuccess={(completed, brand) => {
+                  if (brand) setSelectedBrand(brand as 'CB' | 'VISA');
                   // For all EWC V2 checkouts, trigger FaceID consent to authorize the transaction
                   setShowSca(true);
                 }}
