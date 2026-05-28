@@ -88,12 +88,14 @@ export function ConsentReview({ session, onCancel, onSuccess }: ConsentReviewPro
 
         {/* Attestation 3: SCA Attestation & Co-badging Selector */}
         {requiresSca && (
-          <div style={{ background: 'rgba(59, 130, 246, 0.03)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '12px', padding: '12px' }}>
+          <div style={{ background: 'rgba(16, 185, 129, 0.03)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '12px', padding: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <div style={{ background: 'rgba(59, 130, 246, 0.15)', padding: '6px', borderRadius: '8px' }}>
-                <CreditCard color="#3b82f6" size={16} />
+              <div style={{ background: 'rgba(16, 185, 129, 0.15)', padding: '6px', borderRadius: '8px' }}>
+                <CreditCard color="#4ade80" size={16} />
               </div>
-              <span style={{ fontWeight: 'bold', color: '#3b82f6', fontSize: '13px' }}>Autorisation de Paiement (SCA / DPC)</span>
+              <span style={{ fontWeight: 'bold', color: '#4ade80', fontSize: '13px' }}>
+                {lang === 'fr' ? 'Paiement Direct Initié (DSP3)' : 'Direct Payment Initiation (PSD3)'}
+              </span>
             </div>
 
             <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: 'var(--text-dim)' }}>
