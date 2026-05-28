@@ -369,7 +369,7 @@ export const MandateManager = () => {
             <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
               style={{ width: '100%', padding: '10px', background: 'var(--bg-panel-hover)', border: '1px solid var(--border-light)', borderRadius: '8px', color: 'var(--text-main)', fontFamily: 'inherit', fontSize: '14px' }}>
               {Object.entries(SCOPE_LABELS).map(([k, v]) => (
-                <option key={k} value={k} style={{ backgroundColor: '#1e293b', color: '#f1f5f9' }}>{v.emoji} {v.label}</option>
+                <option key={k} value={k} style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}>{v.emoji} {v.label}</option>
               ))}
             </select>
           </div>
@@ -380,9 +380,9 @@ export const MandateManager = () => {
             </label>
             <select value={form.rail} onChange={e => setForm({ ...form, rail: e.target.value })}
               style={{ width: '100%', padding: '10px', background: 'var(--bg-panel-hover)', border: '1px solid var(--border-light)', borderRadius: '8px', color: 'var(--text-main)', fontFamily: 'inherit', fontSize: '14px' }}>
-              <option value="SEPA" style={{ backgroundColor: '#1e293b', color: '#f1f5f9' }}>{t.mandates.railsOptions.sepa}</option>
-              <option value="STABLECOIN_EURC" style={{ backgroundColor: '#1e293b', color: '#f1f5f9' }}>{t.mandates.railsOptions.eurc}</option>
-              <option value="L402" style={{ backgroundColor: '#1e293b', color: '#f1f5f9' }}>{t.mandates.railsOptions.l402}</option>
+              <option value="SEPA" style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}>{t.mandates.railsOptions.sepa}</option>
+              <option value="STABLECOIN_EURC" style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}>{t.mandates.railsOptions.eurc}</option>
+              <option value="L402" style={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}>{t.mandates.railsOptions.l402}</option>
             </select>
           </div>
 
