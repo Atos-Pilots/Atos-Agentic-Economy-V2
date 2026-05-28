@@ -96,18 +96,19 @@ export const translations = {
       }
     },
     retailer: {
-      title: 'Terminal de Caisse Agentique',
-      modeSelection: 'Sélectionnez un Marchand :',
-      cart: 'Panier :',
-      verifyAndPay: 'Vérifier & Payer',
-      waitingScan: 'Présentez votre QR Code',
-      toBePaid: 'À Payer :',
-      instructionsText: 'Veuillez ouvrir votre EUDI Mobile Wallet et scanner le QR code statique du commerçant.',
-      instructionsVisual: 'Ouvrez le scanner',
-      successIdentity: 'Identité Vérifiée Cryptographiquement',
-      receiptTitle: 'Reçu Sécurisé EUDI',
-      printReceipt: 'Imprimer Quittance',
-      newTransaction: 'Nouvelle Transaction',
+      title: 'Terminal de Caisse Souverain',
+      modeSelection: 'SÉLECTIONNER UN SCÉNARIO COMMERÇANT',
+      cart: 'DÉTAIL DE LA VENTE',
+      verifyAndPay: 'Lancer l’encaissement EUDI Fast Checkout',
+      waitingScan: 'Présentez ce QR Code de paiement à votre client',
+      toBePaid: 'Montant Total Commande',
+      instructionsText: 'Présentez ce QR Code de paiement à votre client. Le client doit le scanner avec son EUDI Mobile Wallet pour partager ses attestations d\'identité souveraines et confirmer biométriquement le paiement.',
+      instructionsVisual: 'En attente du scan client (Fast Checkout EUDI)...',
+      successIdentity: 'Paiement Approuvé avec Succès !',
+      receiptTitle: 'L\'attestation d\'autorisation cryptographique Forte Client (SCA) a été validée par la banque du client. Le transfert de fonds a été scellé on-chain en stablecoin EURC, et le reçu SBT (Soulbound Token) ERC-5114 a été émis directement dans le coffre-fort numérique du client.',
+      printReceipt: 'Éditer le ticket marchand (reçu)',
+      newTransaction: 'Retour au Terminal',
+      scenariosLabel: 'SÉLECTIONNER UN SCÉNARIO COMMERÇANT',
       scenarios: {
         lottery: {
           title: "Jeux Loterie - Terminal FDJ",
@@ -188,7 +189,7 @@ export const translations = {
       approvalRequiredDesc: 'Chaque transaction nécessite votre validation FaceID (SCA)',
       signedOn: 'EUDI §3 — SD-JWT VC — Signé le {date}',
       delegationNotice: 'Délégation a priori',
-      delegationNoticeBold: '(EUDI Art.5 & PSD3)',
+      delegationNoticeBold: '(EUDI Art.5 & DSP3)',
       delegationNoticeDesc: '— Une seule approbation biométrique pour définir les droits de votre agent IA. La SCA (Strong Customer Authentication) n\'est requise qu\'à la création du mandat, pas à chaque transaction.',
       newMandate: 'Nouveau Mandat Délégué',
       maxLimit: 'Plafond max (€)',
@@ -213,7 +214,7 @@ export const translations = {
         all: 'Toutes catégories (Illimité)'
       },
       railsOptions: {
-        sepa: '🏦 SEPA (Bancaire - PSD3)',
+        sepa: '🏦 SEPA (Paiement Direct Initié - DSP3)',
         eurc: '🔗 EURC Stablecoin (ERC-4337)',
         l402: '⚡ L402 Micro-paiements (Lightning)'
       }
@@ -314,18 +315,19 @@ export const translations = {
       }
     },
     retailer: {
-      title: 'Agentic Retail Terminal',
-      modeSelection: 'Select a Merchant:',
-      cart: 'Cart:',
-      verifyAndPay: 'Verify & Pay',
-      waitingScan: 'Please present your QR Code',
-      toBePaid: 'To Be Paid:',
-      instructionsText: 'Please open your EUDI Mobile Wallet and scan the static merchant QR code.',
-      instructionsVisual: 'Open the scanner',
-      successIdentity: 'Identity Cryptographically Verified',
-      receiptTitle: 'EUDI Secure Receipt',
-      printReceipt: 'Print Receipt',
-      newTransaction: 'New Transaction',
+      title: 'Sovereign Merchant Terminal',
+      modeSelection: 'SELECT A MERCHANT SCENARIO',
+      cart: 'SALES TRANSACTION DETAILS',
+      verifyAndPay: 'Launch EUDI Fast Checkout payment',
+      waitingScan: 'Present this payment QR Code to your customer',
+      toBePaid: 'Total Order Price',
+      instructionsText: 'Present this payment QR Code to your customer. The customer must scan it with their EUDI Mobile Wallet to share their sovereign credentials and biometrically authorize the payment.',
+      instructionsVisual: 'Waiting for customer scan (EUDI Fast Checkout)...',
+      successIdentity: 'Payment Successfully Approved!',
+      receiptTitle: 'The cryptographic Strong Customer Authentication (SCA) attestation has been validated by the customer\'s bank. The EURC stablecoin transaction has been settled on-chain, and the ERC-5114 SBT (Soulbound Token) receipt has been issued directly to the customer\'s digital vault.',
+      printReceipt: 'Print merchant copy (receipt)',
+      newTransaction: 'Back to POS Terminal',
+      scenariosLabel: 'SELECT A MERCHANT SCENARIO',
       scenarios: {
         lottery: {
           title: "Lottery Games - POS",
@@ -406,7 +408,7 @@ export const translations = {
       approvalRequiredDesc: 'Every transaction requires your FaceID validation (SCA)',
       signedOn: 'EUDI §3 — SD-JWT VC — Signed on {date}',
       delegationNotice: 'A Priori Delegation',
-      delegationNoticeBold: '(EUDI Art.5 & PSD3)',
+      delegationNoticeBold: '(EUDI Art.5 & DSP3)',
       delegationNoticeDesc: '— A single biometric approval defines your AI agent\'s rights. SCA (Strong Customer Authentication) is only required at mandate creation, not at each transaction.',
       newMandate: 'New Delegated Mandate',
       maxLimit: 'Max limit (€)',
@@ -431,7 +433,7 @@ export const translations = {
         all: 'All categories (Unlimited)'
       },
       railsOptions: {
-        sepa: '🏦 SEPA (Banking - PSD3)',
+        sepa: '🏦 SEPA (Direct Payment - PSD3)',
         eurc: '🔗 EURC Stablecoin (ERC-4337)',
         l402: '⚡ L402 Micro-payments (Lightning)'
       }

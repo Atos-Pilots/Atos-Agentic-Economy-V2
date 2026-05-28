@@ -31,7 +31,7 @@ interface NewMandateForm {
 }
 
 const RAIL_COLORS: Record<string, string> = {
-  SEPA: '#4a90d9',
+  SEPA: '#4ade80', // Lighter green for DSP3 / SEPA
   STABLECOIN_EURC: '#00d26a',
   L402: '#ff9d00',
   BITCOIN: '#f7931a',
