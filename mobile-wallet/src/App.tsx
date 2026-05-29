@@ -25,7 +25,7 @@ function App() {
   const [showSca, setShowSca] = useState(false);
 
   // Routing State
-  const [route, setRoute] = useState<string>(window.location.hash || '#wallet');
+  const [route, setRoute] = useState<string>(window.location.hash || '#split-view');
 
   // Cloud Push Notification State (Agentic Payments Flow)
   const [pushRequest, setPushRequest] = useState<any>(null);
@@ -37,7 +37,7 @@ function App() {
   const [selectedBrand, setSelectedBrand] = useState<'CB' | 'VISA'>('CB');
 
   useEffect(() => {
-    const handleHashChange = () => setRoute(window.location.hash || '#wallet');
+    const handleHashChange = () => setRoute(window.location.hash || '#split-view');
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
