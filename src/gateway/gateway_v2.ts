@@ -19,9 +19,10 @@ const gatewayApp = express();
 gatewayApp.set('trust proxy', true);
 gatewayApp.use(express.json());
 
-// Enable serving static frontend for Lot 3/Review
-gatewayApp.use(express.static(path.join(process.cwd(), 'public')));
+// Serve static frontend: root serves EUDI Wallet (Split-View default), /proposals serves legacy pending Saga list
+gatewayApp.use('/', express.static(path.join(process.cwd(), 'mobile-wallet/dist')));
 gatewayApp.use('/wallet', express.static(path.join(process.cwd(), 'mobile-wallet/dist')));
+gatewayApp.use('/proposals', express.static(path.join(process.cwd(), 'public')));
 
 // Mounting V2 routes
 gatewayApp.use('/v2/checkout', checkoutV2Router);
