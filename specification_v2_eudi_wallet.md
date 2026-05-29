@@ -96,16 +96,29 @@ Le fournisseur reçoit au minimum :
 - le paiement ;
 - éventuellement un identifiant pseudonyme de transaction si nécessaire pour l’audit.
 
-### 5.4 Check-in ou embarquement accéléré
-Exemple : compagnie aérienne.
-Le fournisseur peut demander :
-- preuve de réservation ;
-- statut premium / fidélité ;
-- identité minimale si exigée ;
-- aucune donnée de paiement si ce n’est pas nécessaire.
+### 5.4 Check-in ou embarquement accéléré en aéroport (Compagnie Aérienne)
+Exemple : Enregistrement prioritaire Air France Terminal 2F.
+Dans ce scénario marchand physique, la borne d'embarquement (Trusted Surface) interagit en proximité avec l'EUDI Wallet de l'utilisateur :
+- Le voyageur scanne le QR-code de la borne ou présente son propre code.
+- Le wallet transmet de manière sélective l'attestation de réservation du vol, la preuve de conformité d'identité (sans divulguer l'intégralité des données personnelles) et le statut de fidélité Premium (Loyalty Silver/Gold).
+- L'écosystème valide instantanément les justificatifs cryptographiques pour débloquer l'accès prioritaire (Fast-Track) aux portillons d'embarquement, sans aucun flux de paiement associé.
 
 ### 5.5 Contrôle d’identité ou douanier
 Le système doit aussi supporter un mode avec identité complète ou renforcée lorsque la réglementation l’exige. Ce cas d’usage justifie que le wallet puisse partager une identité forte, mais seulement dans les scénarios légitimes.
+
+### 5.7 Achat récurrent en ligne (Abonnement Média Netflix / Apple TV)
+Exemple : Souscription à l'abonnement mensuel Netflix Premium (19,99 €/mois).
+Dans ce scénario d'agentic commerce par abonnement :
+- L'utilisateur souscrit en ligne en autorisant son portefeuille à agir en tant que Credential Provider.
+- Le portefeuille génère et signe un **Mandat de Paiement Récurrent** (Payment Mandate) encadré par des clauses strictes d'auto-exécution : prélèvements limités à un maximum de 20,00 € par mois sur le compte bancaire (ex. Crédit Agricole) lié à son attestation SCA.
+- Le commerçant vérifie la preuve du mandat et de l'attestation SCA pour finaliser instantanément la souscription. Chaque mois, le paiement récurrent s'exécute automatiquement en tâche de fond dans le respect du mandat, et la facture est directement poussée dans le coffre-fort du portefeuille mobile.
+
+### 5.8 Achat et activation d'un service IT agentique Atos AI (Agent IA MCP autonome)
+Exemple : Achat de l'agent consultant autonome "Atos Polaris AI" (450,00 € + frais d'audit).
+Ce cas d'usage combine la puissance des architectures d'agents IA modernes et des protocoles de paiement agentique (AP2/X402) :
+- **Achat Initial** : Le client achète en ligne le package logiciel d'Atos Polaris AI. Il présente son attestation d'identité d'entreprise et signe via son portefeuille mobile une transaction sécurisée de 450,00 € (incluant l'attestation cryptographique SCA de sa banque, ex. Crédit Agricole).
+- **Activation MCP (Model Context Protocol)** : Une fois la transaction validée sur le registre, l'agent Atos Polaris AI est activé et s'intègre nativement comme un agent dans l'environnement de production du client (ex: Slack, GitHub, Cloud d'entreprise). Il est rendu appelable dynamiquement via le protocole MCP de Model Context Protocol pour exécuter des tâches d'audit et de remédiation d'infrastructure IT en temps réel.
+- **Micro-paiements Délégués** : Pour fonctionner de manière totalement autonome lors de ses audits d'infrastructure ou de l'appel d'APIs tierces payantes (ex. résolutions de pannes complexes, provisionnements de serveurs d'urgence), l'agent IA utilise un **mandat de délégation agentique** configuré par le client. Ce mandat permet à l'agent d'initier des micro-paiements directs (jusqu'à 50,00 € par audit) réglés en stablecoins (EURC) ou virements directs, sans exiger de validation humaine pour chaque appel MCP, tout en restant sous un contrôle budgétaire strict auditable dans la Control Room.
 
 ### 5.6 Facturation, fidélité et justificatifs
 Après transaction, le fournisseur doit pouvoir émettre vers le wallet :
@@ -566,13 +579,33 @@ Exemple conceptuel :
 5. L’utilisateur valide ou refuse.
 6. L’orchestrateur poursuit ou annule la saga.
 
-### 17.3 Parcours “Embarquement premium”
-1. La borne d’embarquement demande réservation + statut premium.
-2. Le wallet partage uniquement ces éléments.
-3. L’identité complète n’est pas transmise si elle n’est pas requise à cette étape.
-4. Le terminal ouvre l’accès fast track.
+### 17.3 Parcours “Embarquement premium en aéroport” (Air France)
+1. Le voyageur s'approche du portillon d'embarquement prioritaire Air France.
+2. La borne (Trusted Surface) formule une requête OpenID4VP demandant la preuve de réservation de vol (`BoardingPass`) et l'attestation de fidélité Premium (`LoyaltyArtifact` de niveau Silver/Gold).
+3. Le voyageur ouvre son portefeuille, scanne le QR-code de la borne (ou interagit via NFC).
+4. Le portefeuille effectue une vérification de divulgation sélective, affiche à l'écran les informations requises et confirme l'absence de toute donnée civile complète (nom/prénom non partagés, seule la validité du billet et du statut est envoyée).
+5. L'utilisateur consent. Le portefeuille transmet la preuve cryptographique.
+6. Le terminal valide le jeton de présentation, allume le signal vert et ouvre les barrières de l'accès prioritaire (Fast-Track).
 
-### 17.4 Parcours “Douane”
+### 17.4 Parcours “Abonnement Média Récurrent” (Netflix)
+1. L'utilisateur sélectionne l'offre Netflix Premium sur la page d'abonnement en ligne.
+2. Le site web (Trusted Surface Marchande) génère une session unifiée réclamant une preuve de signature de mandat récurrent associée à une clé SCA valide.
+3. L'utilisateur scanne le QR-code avec son EUDI Wallet.
+4. Le portefeuille mobile charge le formulaire de création de mandat : il configure un **Payment Mandate** récurrent rattaché au compte bancaire Crédit Agricole, plafonné à 20,00 € par mois.
+5. L'utilisateur valide le mandat à l'aide de Face ID. La clé cryptographique Ed25519 stockée dans le Secure Enclave signe le mandat de paiement.
+6. Netflix reçoit l'attestation signée, vérifie les signatures cryptographiques et active l'accès. Chaque mois, le paiement s'exécute de façon autonome (AP2 §4.1), et la facture acquittée est envoyée au wallet.
+
+### 17.5 Parcours “Achat d'Agent IA IT avec MCP” (Atos Polaris AI)
+1. Le CTO d'une entreprise commande l'agent consultant Atos Polaris AI sur le portail IT cloud d'Atos.
+2. Le portail d'Atos formule une requête de présentation : preuve d'identité de l'entreprise (`CompanyIdentity`) et confirmation du paiement initial de 450,00 € (nécessitant une authentification SCA forte).
+3. Le CTO scanne le QR-code avec l'EUDI Wallet de l'entreprise.
+4. Le portefeuille affiche les détails : "Atos Polaris Cloud" réclame 450,00 € pour la licence de l'agent IA MCP, et demande la signature du mandat d'activation de l'agent.
+5. Le CTO valide par biométrie. L'attestation SCA issue de sa banque (ex. Crédit Agricole) est présentée, et la clé matérielle signe l'autorisation de transfert (virement direct ou EURC stablecoin).
+6. Le paiement est validé. L'orchestrateur lance automatiquement le provisionnement du conteneur de l'agent IA Atos Polaris dans le cloud de l'entreprise.
+7. L'agent IA Atos Polaris AI s'active, configure son protocole de communication MCP (Model Context Protocol) et s'intègre aux outils de l'entreprise (Slack, GitLab). 
+8. Pour s'auto-financer lors d'audits futurs nécessitant l'appel de micro-APIs tierces ou d'infrastructures de remédiation, l'agent IA utilise un **mandat de délégation agentique** d'un maximum de 50,00 € par audit. L'agent initie ces règlements en autonomie via l'API AP2. Chaque transaction agentique s'exécute automatiquement, et son rapport d'audit signé est consigné dans la Control Room de l'entreprise.
+
+### 17.6 Parcours “Douane”
 1. L’agent public demande une identité forte.
 2. Le wallet affiche clairement le niveau de divulgation demandé.
 3. L’utilisateur valide.

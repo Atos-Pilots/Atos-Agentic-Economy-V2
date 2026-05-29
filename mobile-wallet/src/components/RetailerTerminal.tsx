@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, CheckCircle2, Ticket, ShieldCheck, CreditCard, Building2, Car, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, CheckCircle2, Ticket, ShieldCheck, CreditCard, Building2, Car, ShoppingBag, Plane, Tv, Cpu } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useSettings } from '../context/SettingsContext';
 import { translations } from '../translations';
@@ -72,6 +72,45 @@ export function RetailerTerminal() {
         ? 'Achat de billet avec attestation SCA (Strong Customer Authentication) et réduction étudiante.'
         : 'Ferry ticket purchase with SCA attestation (biometrics) and student discount.',
       items: [{ name: lang === 'fr' ? 'Billet de Ferry : Athènes - Santorin' : 'Ferry Ticket: Athens - Santorini', price: 25.00 }]
+    },
+    {
+      id: 'boarding',
+      name: lang === 'fr' ? '✈️ Air France - Fast Boarding' : '✈️ Air France - Fast Boarding',
+      retailerName: 'Air France Terminal 2F',
+      icon: <Plane size={24} color="#3b82f6" />,
+      color: '#3b82f6',
+      price: 0.00,
+      attributes: ['IdentityCredential'],
+      description: lang === 'fr'
+        ? 'Enregistrement prioritaire à l\'embarquement : partage sélectif d\'identité et de statut de fidélité via EUDI Wallet.'
+        : 'Priority gate boarding: selective sharing of identity and loyalty status via EUDI Wallet.',
+      items: [{ name: lang === 'fr' ? 'Embarquement Vol AF 018 (CDG - JFK)' : 'Boarding Flight AF 018 (CDG - JFK)', price: 0.00 }]
+    },
+    {
+      id: 'media_sub',
+      name: lang === 'fr' ? '📺 Netflix - Abonnement Récurrent' : '📺 Netflix - Recurring Subscription',
+      retailerName: 'Netflix Streaming S.A.',
+      icon: <Tv size={24} color="#e50914" />,
+      color: '#e50914',
+      price: 19.99,
+      attributes: ['ScaAttestation'],
+      description: lang === 'fr'
+        ? 'Abonnement récurrent via EUDI Wallet : signature d\'un mandat de paiement de débit direct (jusqu\'à 20 €/mois).'
+        : 'Recurring media subscription via EUDI Wallet: signing a recurring Direct Debit Mandate (up to €20/month).',
+      items: [{ name: lang === 'fr' ? 'Netflix Premium (Ultra HD - Mensuel)' : 'Netflix Premium (Ultra HD - Monthly)', price: 19.99 }]
+    },
+    {
+      id: 'atos_mcp',
+      name: lang === 'fr' ? '🌌 Atos Polaris AI - Agent MCP' : '🌌 Atos Polaris AI - MCP Agent',
+      retailerName: 'Atos Polaris Cloud',
+      icon: <Cpu size={24} color="#0066b2" />,
+      color: '#0066b2',
+      price: 450.00,
+      attributes: ['IdentityCredential', 'ScaAttestation'],
+      description: lang === 'fr'
+        ? 'Activation cryptographique d\'un agent IA Atos compatible MCP. Intégration IT autonome avec délégation de micro-paiements stablecoins (max 50 €/audit).'
+        : 'Cryptographic activation of an MCP-compatible Atos AI Agent. Autonomous IT integration with stablecoin micro-payment delegation (max €50/audit).',
+      items: [{ name: lang === 'fr' ? 'Atos Polaris AI Agent Setup & Licence' : 'Atos Polaris AI Agent Setup & License', price: 450.00 }]
     }
   ];
 
