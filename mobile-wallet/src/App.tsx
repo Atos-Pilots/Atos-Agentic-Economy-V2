@@ -138,6 +138,9 @@ function App() {
       if (presentationSession.retailer_id === 'Tabac Le Havane') finalAmount = 15.50;
       else if (presentationSession.retailer_id === 'Hôtel Royal Palace') finalAmount = 120.00;
       else if (presentationSession.retailer_id === 'Elite Car Rental') finalAmount = 300.00;
+      else if (presentationSession.retailer_id === 'Air France Terminal 2F') finalAmount = 0.00;
+      else if (presentationSession.retailer_id === 'Netflix Streaming S.A.') finalAmount = 19.99;
+      else if (presentationSession.retailer_id === 'Atos Polaris Cloud') finalAmount = 450.00;
 
       try {
         await fetch('/v2/checkout/submit', {

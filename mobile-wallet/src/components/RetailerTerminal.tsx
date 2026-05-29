@@ -114,7 +114,7 @@ export function RetailerTerminal() {
     }
   ];
 
-  const [selectedScenario, setSelectedScenario] = useState<Scenario>(SCENARIOS[3]); // Default to FastFerry
+  const [selectedScenario, setSelectedScenario] = useState<Scenario>(SCENARIOS[6]); // Default to Atos Polaris AI MCP Agent
   const [checkoutSession, setCheckoutSession] = useState<any>(null);
   const [status, setStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
 

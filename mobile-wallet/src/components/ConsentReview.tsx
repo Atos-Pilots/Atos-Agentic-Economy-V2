@@ -26,6 +26,9 @@ export function ConsentReview({ session, onCancel, onSuccess }: ConsentReviewPro
   if (session.retailer_id === 'Tabac Le Havane') displayAmount = '15.50';
   else if (session.retailer_id === 'Hôtel Royal Palace') displayAmount = '120.00';
   else if (session.retailer_id === 'Elite Car Rental') displayAmount = '300.00';
+  else if (session.retailer_id === 'Air France Terminal 2F') displayAmount = '0.00';
+  else if (session.retailer_id === 'Netflix Streaming S.A.') displayAmount = '19.99';
+  else if (session.retailer_id === 'Atos Polaris Cloud') displayAmount = '450.00';
 
   // High contrast legible green design system tokens for DSP3 / PSD3 SCA consent box
   const containerBg = isDark ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.05)';
