@@ -25,6 +25,26 @@ These roles are expected to have the greatest influence on:
 In particular, the Trusted Surface used to capture and sign the Checkout Mandate may differ from the Trusted Surface used to capture and sign the Payment Mandate.
 The objectives of the POCs are called out by section 1.2 in the beginning of the document.
 
+### 1.2 Choix Technologiques Fondamentaux (UCP, AP2, Mastercard VI) et Alignement Marché
+
+Les choix d'implémentation de la plateforme reposent sur des standards ouverts pour garantir l'adoption et la pérennité :
+- **Google Agentic Payments Protocol (AP2)** pour la couche de paiement (Payment Layer).
+- **Mastercard Verifiable Intent (VI)** pour la couche de vérification de l'intention (Intent Verification Layer).
+
+Ces choix se justifient par :
+- **Ouverture et Interopérabilité** : Les spécifications de l'UCP, de l'AP2 et du VI sont open-source et publiques, favorisant la collaboration industrielle, l'interopérabilité et limitant les dépendances aux écosystèmes propriétaires.
+- **Alignement avec FIDO** : L'alliance FIDO a intégré AP2 et Verifiable Intent comme briques de base de ses futures spécifications pour le commerce agentique.
+
+**Note sur l'implémentation de l'UCP (Universal Commerce Protocol) :**
+Bien que l'UCP soit le choix naturel pour la couche commerciale ("Commerce Layer"), la priorité de ces POCs se concentre sur les aspects de confiance, de justificatifs d'identité et de rails de paiement sécurisés. Ainsi, pour réduire la complexité technique, les aspects de découverte de marchands compatibles par les agents IA, d'interactions approfondies avec les catalogues produits ou de négociations de remises complexes par les agents d'achat (Shopping Agents) ne sont pas traités comme prioritaires. Ils sont émulés de manière simplifiée dans notre architecture via des flux d'offres internes UCP, laissant le transport agnostique pour plus de flexibilité.
+
+### 1.3 Cycle de Vie et Création des Mandats (État de l'Art et Validation Explicite)
+
+Pour concilier l'état de l'art technologique et la conformité stricte en matière de consentement de l'utilisateur :
+1. **Création assistée/automatique d'un brouillon de mandat (Draft Mandate)** : Lors de la phase de checkout, le marchand (ou l'agent d'achat) génère automatiquement une proposition de mandat pré-configurée avec les paramètres attendus (limite budgétaire suggérée, rails requis comme les stablecoins EURC ou virement SEPA, validité temporelle).
+2. **Présentation et Revue Explicite dans le Wallet** : Ce projet de mandat est transmis au EUDI Wallet de l'utilisateur. Le portefeuille n'approuve rien en tâche de fond de manière opaque. Il affiche le mandat à l'écran sous une forme hautement lisible.
+3. **Personnalisation et Signature par l'utilisateur** : L'utilisateur conserve le contrôle souverain. Il peut accepter le mandat tel quel, ou en modifier manuellement les limites (par exemple, baisser le montant maximum par transaction). Il valide ensuite explicitement le mandat à l'aide de son authentification forte (SCA biométrique, ex. Face ID), générant la signature cryptographique Ed25519 matérielle locale stockée dans le Secure Enclave.
+
 ## 2. Référentiel de départ
 
 Le pilote existant comprend déjà les briques suivantes :
