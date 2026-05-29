@@ -11,7 +11,7 @@ interface Bank {
 
 export function IssuancePortal() {
   const BANKS: Bank[] = [
-    { id: 'revolut', name: 'Revolut Bank', logoColor: '#ffffff', gradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', textColor: '#ffffff' },
+    { id: 'ca', name: 'Crédit Agricole', logoColor: '#00a294', gradient: 'linear-gradient(135deg, #007a70 0%, #003b36 100%)', textColor: '#00ebd5' },
     { id: 'sg', name: 'Société Générale', logoColor: '#e11d48', gradient: 'linear-gradient(135deg, #e11d48 0%, #111827 100%)', textColor: '#ffffff' },
     { id: 'bnp', name: 'BNP Paribas', logoColor: '#10b981', gradient: 'linear-gradient(135deg, #065f46 0%, #022c22 100%)', textColor: '#10b981' },
     { id: 'worldline', name: 'Worldline Banking', logoColor: '#8b5cf6', gradient: 'linear-gradient(135deg, #6d28d9 0%, #2e1065 100%)', textColor: '#a78bfa' }
