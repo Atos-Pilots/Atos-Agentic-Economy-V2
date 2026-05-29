@@ -8,6 +8,23 @@ La V2 doit permettre à un utilisateur et à un retailer ou fournisseur de servi
 
 Le pilote doit rester simple à démontrer, mais il doit être conçu comme une base crédible d’évolution vers un wallet européen conforme aux pratiques et standards émergents.
 
+### 1.1 Cadre des Preuves de Concept (POC) et Rôles AP2 / Mastercard VI
+
+Each POC is expected to instantiate the roles defined by Google Agentic Payments Protocol (AP2) and implement credentials and mandates aligned with Mastercard Verifiable Intent, with responsibilities distributed across participants to reflect realistic ecosystem conditions. It is therefore expected that participating actors have a sufficient understanding of these protocols and specifications, including their respective trust, payment, and interaction models.
+
+CB plans to conduct three POCs exploring different allocations of the AP2 roles, with a particular focus on the roles of:
+- **Credential Provider**
+- **Trusted Surface**
+
+These roles are expected to have the greatest influence on:
+- User experience and trust perception
+- Brand visibility
+- Payment instrument selection
+- Compliance with the overarching principles and core functional requirements defined in this document
+
+In particular, the Trusted Surface used to capture and sign the Checkout Mandate may differ from the Trusted Surface used to capture and sign the Payment Mandate.
+The objectives of the POCs are called out by section 1.2 in the beginning of the document.
+
 ## 2. Référentiel de départ
 
 Le pilote existant comprend déjà les briques suivantes :
