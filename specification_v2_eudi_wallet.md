@@ -820,4 +820,4 @@ Le composant retailer doit pouvoir générer et vérifier des demandes de prése
 
 Le dashboard Control Room doit être enrichi pour afficher toute la séquence : demande, consentement, preuve, vérification, paiement, émission des documents et événements de fidélité.
 
-Le MVP V2 doit démontrer au minimum un parcours complet d’achat réglementé avec preuve d’âge minimale, paiement et reçu dans le wallet, tout en réutilisant les mandats et la résilience déjà implémentés dans le pilote existant.
+Le MVP V2 doit démontrer au minimum un parcours complet d’achat réglementé avec preuve d’âge minimale, paiement et reçu dans le wallet, tout en réutilisant les mandats et la résilience déjà implémentés dans le pilote existant..
