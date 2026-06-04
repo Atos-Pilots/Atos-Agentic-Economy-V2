@@ -138,7 +138,11 @@ Exemple : Achat de l'agent consultant autonome "Atos Polaris AI" (450,00 € + f
 Ce cas d'usage combine la puissance des architectures d'agents IA modernes et des protocoles de paiement agentique (AP2/X402) :
 - **Achat Initial** : Le client achète en ligne le package logiciel d'Atos Polaris AI. Il présente son attestation d'identité d'entreprise et signe via son portefeuille mobile une transaction sécurisée de 450,00 € (incluant l'attestation cryptographique SCA de sa banque, ex. Crédit Agricole).
 - **Activation MCP (Model Context Protocol)** : Une fois la transaction validée sur le registre, l'agent Atos Polaris AI est activé et s'intègre nativement comme un agent dans l'environnement de production du client (ex: Slack, GitHub, Cloud d'entreprise). Il est rendu appelable dynamiquement via le protocole MCP de Model Context Protocol pour exécuter des tâches d'audit et de remédiation d'infrastructure IT en temps réel.
-- **Micro-paiements Délégués** : Pour fonctionner de manière totalement autonome lors de ses audits d'infrastructure ou de l'appel d'APIs tierces payantes (ex. résolutions de pannes complexes, provisionnements de serveurs d'urgence), l'agent IA utilise un **mandat de délégation agentique** configuré par le client. Ce mandat permet à l'agent d'initier des micro-paiements directs (jusqu'à 50,00 € par audit) réglés en stablecoins (EURC) ou virements directs, sans exiger de validation humaine pour chaque appel MCP, tout en restant sous un contrôle budgétaire strict auditable dans la Control Room.
+- **Micro-paiements Délégués (DePIN Serverless Compute API)** : Pour fonctionner de manière totalement autonome lors de ses audits d'infrastructure, l'agent IA fait appel à une **API de Calcul Souverain Serveur (Serverless Compute API)**. 
+  Pour chaque tâche, l'agent instancie dynamiquement un conteneur d'inférence éphémère exécutant un modèle d'analyse Open Source récupéré depuis le hub **HuggingFace** (ex: *LogBERT* ou *Mistral-7B-Logs*). 
+  Les secrets et jetons d'accès nécessaires pour interroger ces APIs distantes sont gérés de façon sécurisée via un **Secret Management décentralisé** (HSM/Coffre-fort décentralisé compatible avec l'identité de l'entreprise), évitant d'exposer des clés privées sur les serveurs d'exécution.
+  Chaque calcul s'accompagne d'une **validation cryptographique par consensus** (vérification de la bonne exécution du modèle par des tiers validateurs) pour s'assurer que le modèle n'a pas été manipulé par le nœud de calcul éphémère.
+  Le règlement des ressources calculatoires consommées au prorata du temps d'exécution (ex: quelques minutes de GPU) s'effectue en arrière-plan de manière autonome (sans intervention humaine) via le protocole **AP2** (stablecoins EURC ou virements instantanés), dans la limite stricte du **mandat de délégation agentique** préalablement configuré et signé par le CTO (max 50,00 € par tâche d'inférence).
 
 ### 5.6 Facturation, fidélité et justificatifs
 Après transaction, le fournisseur doit pouvoir émettre vers le wallet :
@@ -619,11 +623,17 @@ Exemple conceptuel :
 1. Le CTO d'une entreprise commande l'agent consultant Atos Polaris AI sur le portail IT cloud d'Atos.
 2. Le portail d'Atos formule une requête de présentation : preuve d'identité de l'entreprise (`CompanyIdentity`) et confirmation du paiement initial de 450,00 € (nécessitant une authentification SCA forte).
 3. Le CTO scanne le QR-code avec l'EUDI Wallet de l'entreprise.
-4. Le portefeuille affiche les détails : "Atos Polaris Cloud" réclame 450,00 € pour la licence de l'agent IA MCP, et demande la signature du mandat d'activation de l'agent.
-5. Le CTO valide par biométrie. L'attestation SCA issue de sa banque (ex. Crédit Agricole) est présentée, et la clé matérielle signe l'autorisation de transfert (virement direct ou EURC stablecoin).
+4. Le portefeuille affiche les détails : "Atos Polaris Cloud" réclame 450,00 € pour la licence de l'agent IA MCP, et demande la signature du mandat d'activation et de délégation financière de l'agent.
+5. Le CTO valide par biométrie. L'attestation SCA issue de sa banque (ex. Crédit Agricole) est présentée, et la clé matérielle signe l'autorisation de transfert (virement direct ou EURC stablecoin) ainsi que le mandat de délégation (max 50,00 €/inférence).
 6. Le paiement est validé. L'orchestrateur lance automatiquement le provisionnement du conteneur de l'agent IA Atos Polaris dans le cloud de l'entreprise.
-7. L'agent IA Atos Polaris AI s'active, configure son protocole de communication MCP (Model Context Protocol) et s'intègre aux outils de l'entreprise (Slack, GitLab). 
-8. Pour s'auto-financer lors d'audits futurs nécessitant l'appel de micro-APIs tierces ou d'infrastructures de remédiation, l'agent IA utilise un **mandat de délégation agentique** d'un maximum de 50,00 € par audit. L'agent initie ces règlements en autonomie via l'API AP2. Chaque transaction agentique s'exécute automatiquement, et son rapport d'audit signé est consigné dans la Control Room de l'entreprise.
+7. L'agent IA Atos Polaris AI s'active, configure son protocole de communication MCP (Model Context Protocol) et s'intègre aux outils de l'entreprise (Slack, GitLab).
+8. Lors de la détection d'une anomalie système, l'agent appelle l'**API de Calcul Souverain Serveur (Serverless Compute API)** :
+   - L'agent chiffre localement les données de logs.
+   - Il s'authentifie de manière sécurisée auprès de l'infrastructure de calcul via un service de **Secret Management décentralisé** (sans stocker de clés en clair).
+   - Il transmet les logs et l'URI d'un modèle d'inférence open-source issu de **HuggingFace** pour démarrer un conteneur d'exécution éphémère.
+   - Les validateurs du réseau vérifient l'exécution par un protocole de **consensus cryptographique** pour garantir l'intégrité de l'analyse (preuve de non-manipulation).
+   - Le paiement éphémère (au prorata de l'usage des ressources GPU) est instancié de manière autonome via l'API **AP2** (stablecoins EURC).
+   - L'agent déchiffre localement le diagnostic, résout l'incident, et consigne le rapport d'audit dans la Control Room de l'entreprise.
 
 ### 17.6 Parcours “Douane”
 1. L’agent public demande une identité forte.

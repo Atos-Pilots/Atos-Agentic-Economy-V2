@@ -37,7 +37,7 @@ export const BlockchainLedger: React.FC<BlockchainLedgerProps> = ({ lang, events
                                     <code>verify(zkp_proof, did:web:france.identite) == TRUE</code>
                                 </div>
                                 <div style={{ fontSize: '11px', color: '#059669', marginTop: '8px', padding: '6px', background: '#D1FAE5', borderRadius: '4px' }}>
-                                    <strong>Privacy Focus:</strong> Ancrage de la session synchronisé sur la blockchain européenne EBSI (Testnet). Aucune donnée personnelle envoyée au serveur du marchand.
+                                    <strong>Privacy Focus:</strong> Ancrage de la session de calcul sécurisé synchronisé sur la blockchain EBSI (Testnet). Aucune donnée brute partagée.
                                 </div>
                             </>
                         ) : hasPresentationScanned ? (
@@ -59,14 +59,14 @@ export const BlockchainLedger: React.FC<BlockchainLedgerProps> = ({ lang, events
 
                 {/* Simulated x402 block */}
                 <div className={`protocol-block ${hasX402 ? 'active' : ''}`} style={{ marginTop: '20px' }}>
-                    <div className="block-title">Protocol x402 (Micro-Payment)</div>
+                    <div className="block-title">Protocol x402 (Compute Micropayment)</div>
                     <div className="block-body">
                         {hasX402 ? (
                             <>
                                 <p className="text-orange">{t[lang].x402_detect}</p>
                                 <div className="transaction-bar">
                                     <span className="tx-hash">0x9a4f...31bc</span>
-                                    <span className="tx-amount">0.05 EURC</span>
+                                    <span className="tx-amount">3.50 EURC</span>
                                     <span className="tx-status success">✓ CONFIRMED</span>
                                 </div>
                             </>
@@ -78,10 +78,10 @@ export const BlockchainLedger: React.FC<BlockchainLedgerProps> = ({ lang, events
 
                 {/* Simulated AP2 Payment Execution */}
                 <div className={`protocol-block ${events.includes('payment.execution.started') ? 'active' : ''}`} style={{ marginTop: '20px' }}>
-                    <div className="block-title">AP2 Settlement</div>
+                    <div className="block-title">AP2 Serverless Compute Settlement</div>
                     <div className="block-body">
                         {events.includes('payment.execution.started') ? (
-                            <p style={{ color: '#0EA5E9', fontWeight: 600 }}>Autorisation et exécution du paiement de la session...</p>
+                            <p style={{ color: '#0EA5E9', fontWeight: 600 }}>Règlement de calcul souverain par API autorisé et validé par consensus...</p>
                         ) : (
                             <p className="opacity-50">Non-initié / Uninitiated</p>
                         )}
@@ -90,20 +90,20 @@ export const BlockchainLedger: React.FC<BlockchainLedgerProps> = ({ lang, events
 
                 {/* Simulated SBT issuance */}
                 <div className={`protocol-block ${hasSBT ? 'active blast' : ''}`} style={{ marginTop: '20px', borderColor: hasSBT ? 'var(--success-green)' : '' }}>
-                    <div className="block-title">Verifiable Credential (SBT)</div>
+                    <div className="block-title">Sovereign Compute Credential (SBT)</div>
                     <div className="block-body">
                         {hasSBT ? (
                             <>
                                 <p className="text-green" style={{ color: '#10B981', fontWeight: 600 }}>{t[lang].sbt_minted}</p>
                                 <div className="sbt-card">
                                     <div className="sbt-header">
-                                        <span>ATOS PILOT MINT</span>
+                                        <span>ATOS SOVEREIGN MINT</span>
                                         <span>ERC-5114</span>
                                     </div>
                                     <div className="sbt-content">
                                         <div className="sbt-seal">🛡️</div>
                                         <div>
-                                            <p>Mandate Hash:</p>
+                                            <p>Compute Proof Hash:</p>
                                             <p className="hash-text">0x74c93a...df92</p>
                                         </div>
                                     </div>
