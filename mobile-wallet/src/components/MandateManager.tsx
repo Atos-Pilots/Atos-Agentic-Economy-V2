@@ -334,7 +334,7 @@ export const MandateManager = () => {
       </div>
 
       {/* Regulatory explainer */}
-      <div className="glass-panel" style={{ marginBottom: '20px', padding: '14px', background: 'rgba(112,0,255,0.06)', borderColor: 'rgba(112,0,255,0.3)' }}>
+      <div className="glass-panel" data-didactic-key="mandate_atos" style={{ marginBottom: '20px', padding: '14px', background: 'rgba(112,0,255,0.06)', borderColor: 'rgba(112,0,255,0.3)' }}>
         <p style={{ fontSize: '12px', color: 'var(--text-dim)', margin: 0, lineHeight: 1.6 }}>
           <strong style={{ color: 'var(--accent-neon)' }}>{t.mandates.delegationNotice} {t.mandates.delegationNoticeBold}</strong> {t.mandates.delegationNoticeDesc}
         </p>
