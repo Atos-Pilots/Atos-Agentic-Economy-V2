@@ -6,6 +6,8 @@ interface SettingsContextType {
   setLang: (lang: Language) => void;
   theme: 'light' | 'dark';
   setTheme: (theme: 'light' | 'dark') => void;
+  didacticEnabled: boolean;
+  setDidacticEnabled: (val: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -19,6 +21,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return (localStorage.getItem('app_theme') as 'light' | 'dark') || 'dark';
   });
 
+  const [didacticEnabled, setDidacticEnabled] = useState<boolean>(() => {
+    return localStorage.getItem('app_didactic') !== 'false';
+  });
+
   useEffect(() => {
     localStorage.setItem('app_lang', lang);
   }, [lang]);
@@ -28,13 +34,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    localStorage.setItem('app_didactic', String(didacticEnabled));
+  }, [didacticEnabled]);
+
   // Enforce body style update
   useEffect(() => {
       document.body.className = theme === 'light' ? 'light-mode' : '';
   }, [theme]);
 
   return (
-    <SettingsContext.Provider value={{ lang, setLang, theme, setTheme }}>
+    <SettingsContext.Provider value={{ lang, setLang, theme, setTheme, didacticEnabled, setDidacticEnabled }}>
       {children}
     </SettingsContext.Provider>
   );

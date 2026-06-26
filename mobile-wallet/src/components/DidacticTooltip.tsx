@@ -4,7 +4,7 @@ import { didacticData } from '../didacticData';
 import { HelpCircle, Shield, Cpu, BookOpen, Layers, Zap } from 'lucide-react';
 
 export const DidacticTooltip: React.FC = () => {
-  const { lang } = useSettings();
+  const { lang, didacticEnabled } = useSettings();
   const [state, setState] = useState<{
     show: boolean;
     key: string;
@@ -19,6 +19,11 @@ export const DidacticTooltip: React.FC = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
+    if (!didacticEnabled) {
+      setState(prev => ({ ...prev, show: false }));
+      return;
+    }
+
     const handleMouseOver = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest('[data-didactic-key]') as HTMLElement;
       if (target) {
@@ -49,7 +54,7 @@ export const DidacticTooltip: React.FC = () => {
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
     };
-  }, []);
+  }, [didacticEnabled]);
 
   // Update positioning when show state changes or key changes
   useEffect(() => {
