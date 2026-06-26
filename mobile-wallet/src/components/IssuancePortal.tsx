@@ -122,7 +122,7 @@ export function IssuancePortal() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingBottom: '100px' }}>
       
       {/* SECTION 1: BANK CONNECTIVITY */}
-      <div className="glass-panel animate-enter" style={{ border: '1px solid #3b82f6', background: 'rgba(59, 130, 246, 0.02)', padding: '24px' }}>
+      <div className="glass-panel animate-enter" data-didactic-key="sca_bank" style={{ border: '1px solid #3b82f6', background: 'rgba(59, 130, 246, 0.02)', padding: '24px' }}>
         
         {bankStep === 'SELECT_BANK' && (
           <div>
@@ -131,7 +131,7 @@ export function IssuancePortal() {
                 <Building2 color="#3b82f6" size={24} />
               </div>
               <div>
-                <h3 style={{ margin: 0, color: '#3b82f6', fontSize: '16px' }}>Attestation de Paiement PSD2</h3>
+                <h3 style={{ margin: 0, color: '#3b82f6', fontSize: '16px' }}>Attestation de Paiement PSD3/PSR</h3>
                 <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-dim)' }}>Strong Customer Authentication (SCA)</p>
               </div>
             </div>
@@ -164,7 +164,7 @@ export function IssuancePortal() {
                 >
                   <span style={{ fontSize: '15px', fontWeight: 'bold', color: 'white' }}>{bank.name}</span>
                   <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', background: 'rgba(0,0,0,0.2)', padding: '2px 8px', borderRadius: '10px' }}>
-                    <Lock size={8} /> PSD2 COMPLIANT
+                    <Lock size={8} /> PSD3/PSR COMPLIANT
                   </div>
                 </div>
               ))}
@@ -225,7 +225,7 @@ export function IssuancePortal() {
           <div className="animate-enter">
             <h3 style={{ margin: '0 0 12px 0', color: selectedBank.textColor }}>Consentement d'Émission</h3>
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-light)', borderRadius: '8px', padding: '14px', marginBottom: '20px', fontSize: '12px', lineHeight: 1.5 }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Attestation PSD2 SCA requise :</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'white' }}>Attestation PSD3/PSR SCA requise :</div>
               <ul style={{ margin: 0, paddingLeft: '16px', color: 'var(--text-dim)' }}>
                 <li>IBAN : FR76 3000 6000 0001 2345 6789 001</li>
                 <li>Génération de signature asymétrique liée à l'appareil</li>
@@ -275,11 +275,11 @@ export function IssuancePortal() {
         {bankStep === 'SUCCESS' && (
           <div className="animate-enter">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--success-green)', fontWeight: 'bold', fontSize: '15px', marginBottom: '16px' }}>
-              <ShieldCheck size={22} /> Attestation SCA PSD2 Active !
+              <ShieldCheck size={22} /> Attestation SCA PSD3/PSR Active !
             </div>
 
             {/* Gorgeous Bank Virtual Card representation inside wallet */}
-            <div style={{
+            <div data-didactic-key="sca_bank" style={{
               background: 'linear-gradient(135deg, #4f46e5 0%, #070b19 100%)',
               borderRadius: '16px',
               padding: '20px',
@@ -311,7 +311,7 @@ export function IssuancePortal() {
             </div>
 
             <p style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: 1.4, margin: 0 }}>
-              Votre clé asymétrique est désormais enrôlée et stockée localement dans le Secure Enclave. Le terminal marchand pourra faire appel à cette attestation pour initier un paiement PSD2 sécurisé en 1-click.
+              Votre clé asymétrique est désormais enrôlée et stockée localement dans le Secure Enclave. Le terminal marchand pourra faire appel à cette attestation pour initier un paiement PSD3/PSR sécurisé en 1-click.
             </p>
           </div>
         )}

@@ -167,9 +167,16 @@ export const MandateManager = () => {
     const remaining = daysRemaining(m.expires_at);
     const rails = m.authorized_rails.split(',').map(r => r.trim());
 
+    const getMandateDidacticKey = (scope: string) => {
+      if (scope.includes('infrastructure')) return 'mandate_atos';
+      if (scope.includes('it')) return 'mandate_atos';
+      return 'mandate_netflix';
+    };
+
     return (
       <div
         className="glass-panel animate-enter"
+        data-didactic-key={getMandateDidacticKey(m.scope)}
         style={{
           marginBottom: '16px',
           borderColor: isActive && !expired

@@ -4,6 +4,18 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useSettings } from '../context/SettingsContext';
 import { translations } from '../translations';
 
+const getDidacticKey = (scenId: string) => {
+  switch (scenId) {
+    case 'tabac': return 'age_proof';
+    case 'rental': return 'driving_license';
+    case 'boarding': return 'airfrance_gate';
+    case 'media_sub': return 'netflix_sub';
+    case 'atos_mcp': return 'atos_polaris';
+    case 'fastferry': return 'student_card';
+    default: return undefined;
+  }
+};
+
 interface Scenario {
   id: string;
   name: string;
@@ -202,6 +214,7 @@ export function RetailerTerminal() {
                   <div
                     key={scen.id}
                     onClick={() => setSelectedScenario(scen)}
+                    data-didactic-key={getDidacticKey(scen.id)}
                     style={{
                       background: isSelected ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
                       border: isSelected ? `2px solid ${scen.color}` : '2px solid var(--border-light)',
@@ -282,7 +295,7 @@ export function RetailerTerminal() {
 
       {status === 'PENDING' && checkoutSession && (
         <div className="animate-enter" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '24px', marginBottom: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}>
+          <div data-didactic-key={getDidacticKey(selectedScenario.id)} style={{ background: 'white', padding: '20px', borderRadius: '24px', marginBottom: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)' }}>
             <QRCodeSVG value={JSON.stringify({ nonce: checkoutSession.session_nonce, type: 'EUDI_FAST_CHECKOUT' })} size={200} />
           </div>
           <h2 style={{ fontSize: '20px', marginBottom: '12px' }}>{t.retailer.waitingScan}</h2>

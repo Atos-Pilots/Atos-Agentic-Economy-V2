@@ -14,6 +14,7 @@ import { DesktopDashboard } from './components/dashboard/DesktopDashboard';
 import { useSettings } from './context/SettingsContext';
 import { translations } from './translations';
 import { SettingsToggle } from './components/SettingsToggle';
+import { DidacticTooltip } from './components/DidacticTooltip';
 
 type TabType = 'identity' | 'scanner' | 'sbt' | 'issuance' | 'notifications' | 'mandates';
 
@@ -174,13 +175,13 @@ function App() {
   );
 
   if (route === '#dashboard') {
-    return <><SettingsToggle /><DesktopDashboard /></>; // Dashboard uses its own header layout without DemoNav
+    return <><SettingsToggle /><DidacticTooltip /><DesktopDashboard /></>; // Dashboard uses its own header layout without DemoNav
   }
   if (route === '#agent-companion') {
-    return <><DemoNavigator /><CompanionApp /></>;
+    return <><DemoNavigator /><DidacticTooltip /><CompanionApp /></>;
   }
   if (route === '#retailer-terminal') {
-    return <><DemoNavigator /><RetailerTerminal /></>;
+    return <><DemoNavigator /><DidacticTooltip /><RetailerTerminal /></>;
   }
 
   const renderWalletApp = (isSplitView = false) => (
@@ -305,6 +306,7 @@ function App() {
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', padding: '20px', paddingTop: '60px', gap: '20px', background: 'var(--bg-dark)', overflow: 'hidden' }}>
         <DemoNavigator />
+        <DidacticTooltip />
         {/* WALLET COLUMN */}
         <div style={{ display: 'flex', justifyContent: 'center', minWidth: '430px', flexShrink: 0, position: 'relative', overflow: 'visible', background: 'transparent' }}>
           {renderWalletApp(true)}
@@ -321,7 +323,7 @@ function App() {
     );
   }
 
-  return renderWalletApp(false);
+  return <>{renderWalletApp(false)}<DidacticTooltip /></>;
 }
 
 export default App;

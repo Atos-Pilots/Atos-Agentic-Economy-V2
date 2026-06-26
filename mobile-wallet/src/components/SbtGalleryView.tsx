@@ -261,7 +261,7 @@ export const SbtGalleryView = () => {
 
             {/* Dynamic Eco-Loyalty SBT/NFT Card */}
             {fidelityNft && (
-                <div className="green-holo-card" style={{
+                <div className="green-holo-card" data-didactic-key="green_nft" style={{
                     borderRadius: '16px',
                     padding: '16px',
                     marginBottom: '20px',
@@ -364,6 +364,7 @@ export const SbtGalleryView = () => {
                             <div 
                                 key={r.intent_id || i} 
                                 className="glass-panel animate-enter receipt-sbt-card" 
+                                data-didactic-key="sbt_receipt"
                                 style={{
                                     border: cardBorder,
                                     boxShadow: cardShadow,

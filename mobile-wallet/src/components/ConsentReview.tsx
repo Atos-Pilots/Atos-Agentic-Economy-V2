@@ -105,7 +105,7 @@ export function ConsentReview({ session, onCancel, onSuccess }: ConsentReviewPro
                 <CreditCard color={textTitleColor} size={16} />
               </div>
               <span style={{ fontWeight: 'bold', color: textTitleColor, fontSize: '14px', letterSpacing: '0.01em' }}>
-                {lang === 'fr' ? 'Paiement Direct Initié (DSP3)' : 'Direct Payment Initiation (PSD3)'}
+                {lang === 'fr' ? 'Paiement Direct Initié (DSP3/PSR)' : 'Direct Payment Initiation (PSD3/PSR)'}
               </span>
             </div>
 
@@ -114,7 +114,7 @@ export function ConsentReview({ session, onCancel, onSuccess }: ConsentReviewPro
             </p>
 
             {/* CB Co-badging Card Brand Selector */}
-            <div style={{ marginTop: '14px' }}>
+            <div data-didactic-key="cobadging_selector" style={{ marginTop: '14px' }}>
               <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '8px' }}>
                 Choix de la marque de carte (Co-badgeage) :
               </label>

@@ -188,7 +188,7 @@ export const CompanionApp = () => {
     };
 
     return (
-        <div className="mobile-app-container companion-app-theme" style={{ borderColor: 'var(--accent-neon)', boxShadow: '0 0 50px rgba(112,0,255,0.2)' }}>
+        <div className="mobile-app-container companion-app-theme" data-didactic-key="agent_console" style={{ borderColor: 'var(--accent-neon)', boxShadow: '0 0 50px rgba(112,0,255,0.2)' }}>
             <header className="glass-panel" style={{ margin: '20px', display: 'flex', alignItems: 'center', gap: '16px', borderRadius: '16px' }}>
                 <div style={{ background: 'var(--accent-neon)', padding: '12px', borderRadius: '50%' }}>
                     <Bot color="white" size={24} />

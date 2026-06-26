@@ -75,7 +75,7 @@ export const CredentialsGallery = () => {
 
                 if (attr.type === 'IdentityCredential') {
                     return (
-                        <div key={attr.id} style={{
+                        <div key={attr.id} data-didactic-key="cni" style={{
                             background: 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 50%, #fee2e2 100%)',
                             borderRadius: '16px', padding: '20px', border: '1px solid #CBD5E1', 
                             boxShadow: '0 8px 24px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden',
@@ -119,7 +119,7 @@ export const CredentialsGallery = () => {
 
                 if (attr.type === 'DrivingLicense') {
                     return (
-                        <div key={attr.id} style={{
+                        <div key={attr.id} data-didactic-key="driving_license" style={{
                             background: 'linear-gradient(135deg, #fce7f3 0%, #ffffff 50%, #fbcfe8 100%)', // Pink gradient for FR driving license
                             borderRadius: '16px', padding: '20px', border: '1px solid #F9A8D4', 
                             boxShadow: '0 8px 24px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden',
@@ -160,7 +160,7 @@ export const CredentialsGallery = () => {
 
                 if (attr.type === 'StudentCard') {
                     return (
-                        <div key={attr.id} style={{
+                        <div key={attr.id} data-didactic-key="student_card" style={{
                             background: 'linear-gradient(135deg, #fef3c7 0%, #ffffff 50%, #fef3c7 100%)',
                             borderRadius: '16px', padding: '20px', border: '1px solid #FCD34D', 
                             boxShadow: '0 8px 24px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden',
@@ -241,7 +241,7 @@ export const CredentialsGallery = () => {
 
                 // Default Fallback / Age Proof
                 return (
-                    <div key={attr.id} style={{ background: 'var(--bg-panel)', borderRadius: '12px', padding: '16px', border: '1px solid var(--border-light)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden', color: 'var(--text-main)' }}>
+                    <div key={attr.id} data-didactic-key={attr.type === 'AgeProof' ? 'age_proof' : undefined} style={{ background: 'var(--bg-panel)', borderRadius: '12px', padding: '16px', border: '1px solid var(--border-light)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden', color: 'var(--text-main)' }}>
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: isZkp ? '#10B981' : '#0EA5E9' }} />
                         
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', paddingLeft: '8px' }}>
